@@ -1,0 +1,23 @@
+.profile_img {
+  width: 56%;
+  height: 40px;
+}
+
+.logo {
+  width: 3%;
+  height: 50px;
+}
+
+.page-height {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+  background-image: url(https://flfreedivers.com/cdn/shop/files/FLF_web_1000_spearfishing_2048_2048_2048.jpg?v=1644610203&width=2400);
+}
+
+.form-login {
+  -webkit-box-shadow: 5px 5px 15px 5px #000000;
+  box-shadow: 5px 5px 15px 5px #000000;
+  background-color: #ffffff89;
+}
