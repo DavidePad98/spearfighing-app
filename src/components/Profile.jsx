@@ -1,4 +1,4 @@
-import { Button, Card } from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
 import { useSelector } from "react-redux";
 
 const Profile = () => {
@@ -10,14 +10,19 @@ const Profile = () => {
   }
 
   return (
-    <Card style={{ width: "18rem" }}>
-      <Card.Img variant="top" src={user.profileImage} />
-      <Card.Body>
-        <Card.Title>{user.name}</Card.Title>
-        <Card.Text>{user.surname}</Card.Text>
-        <Button variant="primary">Go somewhere</Button>
-      </Card.Body>
-    </Card>
+    <Container fluid className="profile-container">
+      <Row>
+        <Col></Col>
+      </Row>
+    </Container>
+    // <Card style={{ width: "18rem" }}>
+    //   <Card.Img variant="top" src={user.profileImage} />
+    //   <Card.Body>
+    //     <Card.Title>{user.name}</Card.Title>
+    //     <Card.Text>{user.surname}</Card.Text>
+    //     <Button variant="primary">Go somewhere</Button>
+    //   </Card.Body>
+    // </Card>
   );
 };
 export default Profile;

@@ -4,11 +4,10 @@
 }
 
 .logo {
-  width: 3%;
   height: 50px;
 }
 
-.page-height {
+.login-page {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -20,4 +19,50 @@
   -webkit-box-shadow: 5px 5px 15px 5px #000000;
   box-shadow: 5px 5px 15px 5px #000000;
   background-color: #ffffff89;
+}
+
+.home-container {
+  /* width: 100%; */
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-image: url("./assets/Spearfishing-with-Fish.jpg");
+}
+
+.profile-container {
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  /* background-image: url(https://familyfunscuba.com/wp-content/uploads/2023/02/Spearfishing-with-Fish.jpg); */
+  /* background-image: url("./assets/9fe8523dd03d061cc1070351c24aa0b0.webp"); */
+  background-image: url(https://www.divewarehouse.com.au/cdn/shop/collections/9fe8523dd03d061cc1070351c24aa0b0.jpg?v=1682548191);
+}
+
+.nav {
+  background: #000000;
+  background: -moz-linear-gradient(
+    top,
+    #000000 100%,
+    #000000 100%,
+    #000000 100%
+  );
+  background: -webkit-linear-gradient(
+    top,
+    #000000 100%,
+    #000000 100%,
+    #000000 100%
+  );
+  background: linear-gradient(
+    to bottom,
+    #000000d4 50%,
+    #00000000 100%,
+    #ffffff00 100%
+  );
+}
+
+.white-nav_links:hover {
+  color: white;
+  scale: 1.1;
 }
