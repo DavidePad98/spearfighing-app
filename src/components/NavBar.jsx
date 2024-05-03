@@ -23,8 +23,8 @@ const NavBar = () => {
   return (
     <>
       <Navbar data-bs-theme="dark" expand="lg" fixed="top" className="nav">
-        <Container fluid className="mx-5">
-          <Navbar.Brand href="#home">
+        <Container fluid className="mx-md-5 mx-sm-3">
+          <Navbar.Brand href="#home" className="m-0 me-md-4 fs-3">
             <img
               src="https://st2.depositphotos.com/3646177/7801/v/950/depositphotos_78010524-stock-illustration-shark-logo-vector.jpg"
               alt="logo"
@@ -34,23 +34,58 @@ const NavBar = () => {
           </Navbar.Brand>
           <Navbar.Toggle
             aria-controls="basic-navbar-nav"
-            className="ms-auto me-4"
+            className="ms-auto me-md-4"
           />
+
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-              <Nav.Link as={Link} to={"/"} className="white-nav_links">
-                Home
-              </Nav.Link>
-              <Nav.Link href="#features" className="white-nav_links">
-                Features
-              </Nav.Link>
-              <Nav.Link href="#pricing" className="white-nav_links">
-                Pricing
-              </Nav.Link>
+              {user && user !== null ? (
+                <>
+                  <Nav.Link
+                    as={Link}
+                    to={"/profile"}
+                    className="white-nav_links d-md-none fs-5"
+                  >
+                    <img
+                      src={user.profileImage}
+                      alt="profile_img"
+                      className="profile_img rounded-circle "
+                    />
+                    {user.nickname}
+                  </Nav.Link>
+                  <Nav.Link as={Link} to={"/"} className="white-nav_links">
+                    Home
+                  </Nav.Link>
+                  <Nav.Link href="#features" className="white-nav_links">
+                    Features
+                  </Nav.Link>
+                  <Nav.Link href="#pricing" className="white-nav_links">
+                    Pricing
+                  </Nav.Link>
+                </>
+              ) : (
+                <>
+                  <Nav.Link
+                    as={Link}
+                    to={"/login"}
+                    className="white-nav_links fw-bold d-md-none"
+                  >
+                    Login
+                  </Nav.Link>
+                  <Nav.Link as={Link} to={"/"} className="white-nav_links">
+                    Home
+                  </Nav.Link>
+                  <Nav.Link href="#features" className="white-nav_links">
+                    Features
+                  </Nav.Link>
+                  <Nav.Link href="#pricing" className="white-nav_links">
+                    Pricing
+                  </Nav.Link>
+                </>
+              )}
             </Nav>
           </Navbar.Collapse>
-
-          <Nav className="d-flex flex-row align-items-center ">
+          <Nav className="d-flex flex-row align-items-center  d-none d-md-flex">
             {user && user !== null ? (
               <>
                 <Nav.Link as={Link} to={"/profile"}>
@@ -60,11 +95,11 @@ const NavBar = () => {
                     className="profile_img rounded-circle"
                   />
                 </Nav.Link>
-                <Dropdown>
+                <Dropdown autoClose="inside">
                   <Dropdown.Toggle
                     variant="link"
-                    id="dropdown-basic"
-                    className="white-nav_links fw-bold text-decoration-none white-nav_links text-white "
+                    id="dropdown-autoclose-inside"
+                    className="white-nav_links fw-bold text-decoration-none text-white"
                   >
                     {user.nickname}
                   </Dropdown.Toggle>
@@ -90,7 +125,7 @@ const NavBar = () => {
               <Nav.Link
                 as={Link}
                 to={"/login"}
-                className="white-nav_links fw-bold "
+                className="white-nav_links fw-bold"
               >
                 Login
               </Nav.Link>
@@ -98,74 +133,6 @@ const NavBar = () => {
           </Nav>
         </Container>
       </Navbar>
-
-      {/* <Navbar bg="dark" data-bs-theme="dark" expand="lg" fixed="top">
-        <Container fluid className="px-0">
-          <Navbar.Brand href="#home">
-            <img
-              src="https://st2.depositphotos.com/3646177/7801/v/950/depositphotos_78010524-stock-illustration-shark-logo-vector.jpg"
-              alt="logo"
-              className="rounded-circle logo mx-2"
-            />
-            SaltwaterSpearos
-          </Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Row className=" align-items-center px-5">
-              <Col xs={6} lg={8}>
-                <Nav className="me-auto">
-                  <Nav.Link as={Link} to={"/"}>
-                    Home
-                  </Nav.Link>
-                  <Nav.Link href="#features">Features</Nav.Link>
-                  <Nav.Link href="#pricing">Pricing</Nav.Link>
-                </Nav>
-              </Col>
-              <Col xs={6} lg={4} className="d-flex justify-content-center">
-                <Nav className="d-flex flex-row ms-auto">
-                  {user && user !== null ? (
-                    <>
-                      <Nav.Link as={Link} to={"/profile"}>
-                        <img
-                          src={user.profileImage}
-                          alt="profile_img"
-                          className="profile_img rounded-circle"
-                        />
-                      </Nav.Link>
-
-                      <Dropdown className="text-white me-4 d-flex align-items-center">
-                        <Dropdown.Toggle
-                          id="dropdown-basic"
-                          className="bg-transparent border-0"
-                        >
-                          {user.nickname}
-                        </Dropdown.Toggle>
-
-                        <Dropdown.Menu>
-                          <Dropdown.Item as={Link} to={"/profile"}>
-                            Profile
-                          </Dropdown.Item>
-                          <Dropdown.Item href="#/action-3">
-                            My dashboard
-                          </Dropdown.Item>
-                          <Dropdown.Divider />
-                          <Dropdown.Item onClick={handleLogout}>
-                            Logout
-                          </Dropdown.Item>
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    </>
-                  ) : (
-                    <Nav.Link as={Link} to={"/login"}>
-                      Login
-                    </Nav.Link>
-                  )}
-                </Nav>
-              </Col>
-            </Row>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar> */}
     </>
   );
 };
