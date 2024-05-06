@@ -2,7 +2,6 @@ import { Container, Dropdown, Nav, Navbar, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { logoutUser } from "../redux/action";
-// import setUserReducer from "../redux/reducers/setUserAfterLogin";
 
 const NavBar = () => {
   const user = useSelector(
@@ -12,12 +11,7 @@ const NavBar = () => {
   const dispatch = useDispatch();
 
   const handleLogout = () => {
-    // Effettua il logout dell'utente rimuovendo le informazioni di autenticazione
-    // ad esempio rimuovendo il token dall'archivio locale
-    // e resettando lo stato dell'utente nel tuo negozio Redux
     dispatch(logoutUser());
-    // dispatch(unSetUserAction());
-    // Reindirizza l'utente alla pagina di login dopo il logout
     navigate("/");
   };
   return (
@@ -95,27 +89,25 @@ const NavBar = () => {
                     className="profile_img rounded-circle"
                   />
                 </Nav.Link>
-                <Dropdown autoClose="inside">
+
+                <Dropdown className="d-inline mx-2 ">
                   <Dropdown.Toggle
-                    variant="link"
-                    id="dropdown-autoclose-inside"
-                    className="white-nav_links fw-bold text-decoration-none text-white"
+                    id="dropdown-autoclose-true"
+                    className="white-nav_links fw-bold text-decoration-none text-white bg-transparent border-0"
                   >
                     {user.nickname}
                   </Dropdown.Toggle>
 
-                  <Dropdown.Menu className="position-absolute border-0 nav">
+                  <Dropdown.Menu className="position-absolute">
                     <Dropdown.Item as={Link} to={"/profile"}>
                       Profile
                     </Dropdown.Item>
-                    <Dropdown.Item href="#dashboard">
-                      My Dashboard
-                    </Dropdown.Item>
-                    <Dropdown.Divider />
+                    <Dropdown.Item href="#">Menu Item</Dropdown.Item>
                     <Dropdown.Item
                       onClick={handleLogout}
                       className="text-danger fw-bold fs-5"
                     >
+                      {" "}
                       Logout<i class="bi bi-box-arrow-right ms-2 fs-5"></i>
                     </Dropdown.Item>
                   </Dropdown.Menu>
