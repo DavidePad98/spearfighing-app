@@ -1,7 +1,7 @@
 import {
-  UPLOAD_PROFILE_IMAGE_REQUEST,
-  UPLOAD_PROFILE_IMAGE_SUCCESS,
-  UPLOAD_PROFILE_IMAGE_FAILURE,
+  GET_USER_BY_ID_REQUEST,
+  GET_USER_BY_ID_SUCCESS,
+  GET_USER_BY_ID_FAILURE,
 } from "../action";
 
 const initialState = {
@@ -10,22 +10,22 @@ const initialState = {
   error: null,
 };
 
-const profileImageReducer = (state = initialState, action) => {
+const getUserByIdReducer = (state = initialState, action) => {
   switch (action.type) {
-    case UPLOAD_PROFILE_IMAGE_REQUEST:
+    case GET_USER_BY_ID_REQUEST:
       return {
         ...state,
         loading: true,
         error: null,
       };
-    case UPLOAD_PROFILE_IMAGE_SUCCESS:
+    case GET_USER_BY_ID_SUCCESS:
       return {
         ...state,
         userData: action.payload,
         loading: false,
         error: null,
       };
-    case UPLOAD_PROFILE_IMAGE_FAILURE:
+    case GET_USER_BY_ID_FAILURE:
       return {
         ...state,
         loading: false,
@@ -36,4 +36,4 @@ const profileImageReducer = (state = initialState, action) => {
   }
 };
 
-export default profileImageReducer;
+export default getUserByIdReducer;

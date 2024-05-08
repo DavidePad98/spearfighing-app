@@ -13,6 +13,9 @@ export const FETCH_TICKETS_FAILURE = "FETCH_TICKETS_FAILURE";
 export const UPLOAD_PROFILE_IMAGE_REQUEST = " UPLOAD_PROFILE_IMAGE_REQUEST";
 export const UPLOAD_PROFILE_IMAGE_SUCCESS = " UPLOAD_PROFILE_IMAGE_SUCCESS";
 export const UPLOAD_PROFILE_IMAGE_FAILURE = " UPLOAD_PROFILE_IMAGE_FAILURE";
+export const GET_USER_BY_ID_REQUEST = " GET_USER_BY_ID_REQUEST";
+export const GET_USER_BY_ID_SUCCESS = " GET_USER_BY_ID_SUCCESS";
+export const GET_USER_BY_ID_FAILURE = " GET_USER_BY_ID_FAILURE";
 
 export const fetchActionUsers = (token) => {
   return async (dispatch) => {
@@ -204,6 +207,42 @@ export const uploadProfileImage = (userId, token, formData) => {
       dispatch(uploadProfileImageSuccess(userData));
     } catch (error) {
       dispatch(uploadProfileImageFailure(error.message));
+    }
+  };
+};
+
+export const getUserByIdRequest = () => ({
+  type: GET_USER_BY_ID_REQUEST,
+});
+
+export const getUserByIdSuccess = (userData) => ({
+  type: GET_USER_BY_ID_SUCCESS,
+  payload: userData,
+});
+
+export const getUserByIdFailure = (error) => ({
+  type: GET_USER_BY_ID_FAILURE,
+  payload: error,
+});
+
+export const getUserById = (userId, token) => {
+  return async (dispatch) => {
+    dispatch(getUserByIdRequest());
+    try {
+      const response = await fetch(`http://localhost:3001/users/${userId}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
+      }
+      const userData = await response.json();
+      dispatch(getUserByIdSuccess(userData));
+    } catch (error) {
+      dispatch(getUserByIdFailure(error.message));
     }
   };
 };

@@ -1,4 +1,4 @@
-import { Container, Dropdown, Nav, Navbar, Row } from "react-bootstrap";
+import { Container, Dropdown, Nav, Navbar } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { logoutUser } from "../redux/action";
@@ -7,6 +7,10 @@ const NavBar = () => {
   const user = useSelector(
     (state) => state.login.userData && state.login.userData.user
   );
+  const profileImage = useSelector(
+    (state) => state.user.userData?.profileImage
+  ); // Ottenere l'immagine del profilo dall'archivio Redux
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -14,6 +18,7 @@ const NavBar = () => {
     dispatch(logoutUser());
     navigate("/");
   };
+
   return (
     <>
       <Navbar data-bs-theme="dark" expand="lg" fixed="top" className="nav">
@@ -41,7 +46,7 @@ const NavBar = () => {
                     className="white-nav_links d-md-none fs-5"
                   >
                     <img
-                      src={user.profileImage}
+                      src={profileImage || user.profileImage}
                       alt="profile_img"
                       className="profile_img rounded-circle "
                     />
@@ -84,7 +89,7 @@ const NavBar = () => {
               <>
                 <Nav.Link as={Link} to={"/profile"}>
                   <img
-                    src={user.profileImage}
+                    src={profileImage || user.profileImage}
                     alt="profile_img"
                     className="profile_img rounded-circle"
                   />
