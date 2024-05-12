@@ -1,0 +1,60 @@
+html {
+  overflow-y: scroll;
+  height: 100%;
+  -webkit-overflow-scrolling: touch;
+  overflow-scrolling: touch;
+}
+
+/* body {
+  margin: 0;
+  background: #3b4151;
+  font-family: "Euclid Circular A", "Poppins";
+} */
+
+.home-section {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: brightness(0.68);
+}
+
+h1 {
+  color: white;
+  text-shadow: 1px 1px 3px black;
+  z-index: 1;
+  font-size: 1em;
+  font-weight: 400;
+}
+
+.image1 {
+  background-image: url(./assets/spearfishing-life-slide4.jpg);
+}
+.image2 {
+  background-image: url(./assets/Spearfishing-open-water.jpg);
+}
+.image3 {
+  background-image: url(./assets/Spearfishing-with-Fish.jpg);
+  -webkit-box-shadow: 0px 15px 24px 12px rgba(0, 0, 0, 0.72);
+  box-shadow: 0px 15px 24px 12px rgba(0, 0, 0, 0.72);
+}
+
+h1 {
+  text-transform: uppercase;
+  /* font-size: 4rem; */
+  font-weight: bold;
+  padding: 0 2em;
+}

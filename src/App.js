@@ -6,6 +6,7 @@ import LoginPage from "./components/LoginPage";
 import Profile from "./components/Profile";
 import NavBar from "./components/NavBar";
 import Home from "./components/Home";
+import Footer from "./components/Footer";
 
 function App() {
   return (
@@ -13,9 +14,31 @@ function App() {
       <NavBar />
 
       <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/" element={<Home />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route
+          path="/login"
+          element={
+            <>
+              <LoginPage />
+            </>
+          }
+        />
+        <Route
+          path="/"
+          element={
+            <>
+              <Home />
+              <Footer />
+            </>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <>
+              <Profile />
+            </>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

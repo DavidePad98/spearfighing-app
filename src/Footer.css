@@ -1,0 +1,110 @@
+/* body {
+  margin: 0;
+  background: linear-gradient(#1e152e, #161616);
+  font-family: "Euclid Circular A", "Poppins";
+  color: #d6dfed;
+}
+
+html,
+body {
+  height: 100%;
+} */
+
+/* .background {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+} */
+
+ul {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.socials {
+  gap: 20px;
+}
+
+.socials a {
+  font-size: 24px;
+}
+
+.links {
+  gap: 10px;
+}
+
+.legal {
+  font-size: 12px;
+  margin: 0;
+}
+
+svg {
+  /* position: absolute; */
+  position: relative;
+  bottom: 0;
+  /* top: 0; */
+  /* left: 0; */
+  width: 100%;
+  height: 100%;
+  transform: scaleY(3) scaleX(2.25);
+  transform-origin: bottom;
+  box-sizing: border-box;
+  display: block;
+  pointer-events: none;
+}
+
+footer {
+  /* position: fixed; */
+  contain: content;
+  position: static;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  width: 100%;
+  height: 100vh;
+}
+
+footer section {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 30px;
+  background-image: url(https://marevivo.it/wp-content/uploads/2021/03/sand-beach-as-background_102618-461.jpg);
+  background-size: cover;
+  /* padding-bottom: 80px; */
+  /* padding-left: 60px; */
+  width: 100%;
+}
+
+.pt-h1-footer {
+  padding-top: 200px;
+}
+
+.footer-links {
+  gap: 1rem;
+  padding-bottom: 100px;
+}
+
+/* @media (width > 420px) { */
+@media (width: 420px) {
+  section {
+    align-items: center;
+    padding-left: 0;
+    gap: 20px;
+  }
+
+  .links {
+    gap: 20px;
+  }
+}
+
+@media (width < 650px) {
+  .background {
+    height: 350px;
+  }
+}

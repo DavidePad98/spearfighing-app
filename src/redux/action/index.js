@@ -16,6 +16,14 @@ export const UPLOAD_PROFILE_IMAGE_FAILURE = " UPLOAD_PROFILE_IMAGE_FAILURE";
 export const GET_USER_BY_ID_REQUEST = " GET_USER_BY_ID_REQUEST";
 export const GET_USER_BY_ID_SUCCESS = " GET_USER_BY_ID_SUCCESS";
 export const GET_USER_BY_ID_FAILURE = " GET_USER_BY_ID_FAILURE";
+export const FETCH_POST_REQUEST = "FETCH_POST_REQUEST";
+export const FETCH_POST_SUCCESS = "FETCH_POST_SUCCESS";
+export const FETCH_POST_FAILURE = "FETCH_POST_FAILURE";
+export const FETCH_COMMENT_REQUEST = "FETCH_COMMENT_REQUEST";
+export const FETCH_COMMENT_SUCCESS = "FETCH_COMMENT_SUCCESS";
+export const FETCH_COMMENT_FAILURE = "FETCH_COMMENT_FAILURE";
+
+// ALL USERS
 
 export const fetchActionUsers = (token) => {
   return async (dispatch) => {
@@ -39,6 +47,8 @@ export const fetchActionUsers = (token) => {
     }
   };
 };
+
+// LOGIN
 
 export const loginRequest = () => ({
   type: LOGIN_REQUEST,
@@ -88,6 +98,8 @@ export const logoutUser = () => {
   };
 };
 
+// REGISTRATION
+
 export const registrationRequest = () => ({
   type: REGISTRATION_USER_REQUEST,
 });
@@ -131,45 +143,45 @@ export const registrationUser = (formData) => {
   };
 };
 
-export const ticketRequest = () => ({
-  type: FETCH_TICKETS_REQUEST,
+// USER BY ID
+
+export const getUserByIdRequest = () => ({
+  type: GET_USER_BY_ID_REQUEST,
 });
 
-export const ticketSuccess = (userData) => ({
-  type: FETCH_TICKETS_SUCCESS,
+export const getUserByIdSuccess = (userData) => ({
+  type: GET_USER_BY_ID_SUCCESS,
   payload: userData,
 });
 
-export const ticketFailure = (error) => ({
-  type: FETCH_TICKETS_FAILURE,
+export const getUserByIdFailure = (error) => ({
+  type: GET_USER_BY_ID_FAILURE,
   payload: error,
 });
 
-export const ticketXUser = (userId, token) => {
+export const getUserById = (userId, token) => {
   return async (dispatch) => {
-    dispatch(ticketRequest());
+    dispatch(getUserByIdRequest());
     try {
-      const response = await fetch(
-        `http://localhost:3001/tickets/user/${userId}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-            // Authorization: `Bearer eyJhbGciOiJIUzM4NCJ9.eyJpYXQiOjE3MTUwMTEwODUsImV4cCI6MTcxNTAxNDY4NSwic3ViIjoiMjU2NmY4M2UtN2EwMC00OTFlLTgxZTItNTEwYjVhNmM2YmRiIn0.ANzuJiX2dAeHebxMitPiBRK6h3G_D3-JkUgaALvRXMEqbdz3xCd2TRU7dvKdt4ix`,
-          },
-        }
-      );
+      const response = await fetch(`http://localhost:3001/users/${userId}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
       if (!response.ok) {
         throw new Error("Invalid credentials");
       }
       const userData = await response.json();
-      dispatch(ticketSuccess(userData));
+      dispatch(getUserByIdSuccess(userData));
     } catch (error) {
-      dispatch(ticketFailure(error.message));
+      dispatch(getUserByIdFailure(error.message));
     }
   };
 };
+
+// CHANGE IMG PROFILE
 
 export const uploadProfileImageRequest = () => ({
   type: UPLOAD_PROFILE_IMAGE_REQUEST,
@@ -211,38 +223,125 @@ export const uploadProfileImage = (userId, token, formData) => {
   };
 };
 
-export const getUserByIdRequest = () => ({
-  type: GET_USER_BY_ID_REQUEST,
+// USER'S TICKET
+
+export const ticketRequest = () => ({
+  type: FETCH_TICKETS_REQUEST,
 });
 
-export const getUserByIdSuccess = (userData) => ({
-  type: GET_USER_BY_ID_SUCCESS,
+export const ticketSuccess = (userData) => ({
+  type: FETCH_TICKETS_SUCCESS,
   payload: userData,
 });
 
-export const getUserByIdFailure = (error) => ({
-  type: GET_USER_BY_ID_FAILURE,
+export const ticketFailure = (error) => ({
+  type: FETCH_TICKETS_FAILURE,
   payload: error,
 });
 
-export const getUserById = (userId, token) => {
+export const ticketXUser = (userId, token) => {
   return async (dispatch) => {
-    dispatch(getUserByIdRequest());
+    dispatch(ticketRequest());
     try {
-      const response = await fetch(`http://localhost:3001/users/${userId}`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `http://localhost:3001/tickets/user/${userId}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (!response.ok) {
         throw new Error("Invalid credentials");
       }
       const userData = await response.json();
-      dispatch(getUserByIdSuccess(userData));
+      dispatch(ticketSuccess(userData));
     } catch (error) {
-      dispatch(getUserByIdFailure(error.message));
+      dispatch(ticketFailure(error.message));
+    }
+  };
+};
+
+// USER'S POST
+
+export const postRequest = () => ({
+  type: FETCH_POST_REQUEST,
+});
+
+export const postSuccess = (userData) => ({
+  type: FETCH_POST_SUCCESS,
+  payload: userData,
+});
+
+export const postFailure = (error) => ({
+  type: FETCH_POST_FAILURE,
+  payload: error,
+});
+
+export const postXUser = (userId, token) => {
+  return async (dispatch) => {
+    dispatch(postRequest());
+    try {
+      const response = await fetch(
+        `http://localhost:3001/posts/user/${userId}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
+      }
+      const userData = await response.json();
+      dispatch(postSuccess(userData));
+    } catch (error) {
+      dispatch(postFailure(error.message));
+    }
+  };
+};
+
+// USER'S COMMENT
+
+export const commentRequest = () => ({
+  type: FETCH_COMMENT_REQUEST,
+});
+
+export const commentSuccess = (userData) => ({
+  type: FETCH_COMMENT_SUCCESS,
+  payload: userData,
+});
+
+export const commentFailure = (error) => ({
+  type: FETCH_COMMENT_FAILURE,
+  payload: error,
+});
+
+export const commentXUser = (userId, token) => {
+  return async (dispatch) => {
+    dispatch(commentRequest());
+    try {
+      const response = await fetch(
+        `http://localhost:3001/comments/user/${userId}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
+      }
+      const userData = await response.json();
+      dispatch(commentSuccess(userData));
+    } catch (error) {
+      dispatch(commentFailure(error.message));
     }
   };
 };
