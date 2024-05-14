@@ -7,6 +7,7 @@ import Profile from "./components/Profile";
 import NavBar from "./components/NavBar";
 import Home from "./components/Home";
 import Footer from "./components/Footer";
+import Ticket from "./components/Ticket";
 
 function App() {
   return (
@@ -36,6 +37,14 @@ function App() {
           element={
             <>
               <Profile />
+            </>
+          }
+        />
+        <Route
+          path="/ticket"
+          element={
+            <>
+              <Ticket />
             </>
           }
         />

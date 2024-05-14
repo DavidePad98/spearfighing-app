@@ -22,6 +22,9 @@ export const FETCH_POST_FAILURE = "FETCH_POST_FAILURE";
 export const FETCH_COMMENT_REQUEST = "FETCH_COMMENT_REQUEST";
 export const FETCH_COMMENT_SUCCESS = "FETCH_COMMENT_SUCCESS";
 export const FETCH_COMMENT_FAILURE = "FETCH_COMMENT_FAILURE";
+export const FETCH_ALL_TICKETS_REQUEST = "FETCH_ALL_TICKETS_REQUEST";
+export const FETCH_ALL_TICKETS_SUCCESS = "FETCH_ALL_TICKETS_SUCCESS";
+export const FETCH_ALL_TICKETS_FAILURE = "FETCH_ALL_TICKETS_FAILURE";
 
 // ALL USERS
 
@@ -342,6 +345,44 @@ export const commentXUser = (userId, token) => {
       dispatch(commentSuccess(userData));
     } catch (error) {
       dispatch(commentFailure(error.message));
+    }
+  };
+};
+
+// ALL TICKETS
+
+export const allTicketRequest = () => ({
+  type: FETCH_ALL_TICKETS_REQUEST,
+});
+
+export const allTicketSuccess = (userData) => ({
+  type: FETCH_ALL_TICKETS_SUCCESS,
+  payload: userData,
+});
+
+export const allTicketFailure = (error) => ({
+  type: FETCH_ALL_TICKETS_FAILURE,
+  payload: error,
+});
+
+export const allTicketAction = (token) => {
+  return async (dispatch) => {
+    dispatch(allTicketRequest());
+    try {
+      const response = await fetch(`http://localhost:3001/tickets`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
+      }
+      const userData = await response.json();
+      dispatch(allTicketSuccess(userData));
+    } catch (error) {
+      dispatch(allTicketFailure(error.message));
     }
   };
 };

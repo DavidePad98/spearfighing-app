@@ -5,11 +5,8 @@ const Footer = () => {
   return (
     <footer>
       <section className="d-flex justify-content-between">
-        <h1 className="pt-h1-footer">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Et
-          voluptatibus optio, minus labore repellat soluta, id aliquam quia sed
-          enim maiores quidem deleniti culpa ex dolorem delectus! Cupiditate,
-          animi pariatur!
+        <h1 className="mt-h1-footer text-white rounded-5 w-50 ms-5 p-3">
+          Iscriviti per far parte della nostra community di pescatori!
         </h1>
 
         <div className="background ">

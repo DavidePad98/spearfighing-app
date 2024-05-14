@@ -5,12 +5,6 @@ html {
   overflow-scrolling: touch;
 }
 
-/* body {
-  margin: 0;
-  background: #3b4151;
-  font-family: "Euclid Circular A", "Poppins";
-} */
-
 .home-section {
   position: relative;
   height: 100vh;
@@ -29,15 +23,58 @@ html {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  filter: brightness(0.68);
+  filter: brightness(0.9);
 }
 
 h1 {
-  color: white;
-  text-shadow: 1px 1px 3px black;
-  z-index: 1;
-  font-size: 1em;
-  font-weight: 400;
+  text-shadow: 3px 0px 1px black;
+  font-size: 3.5em;
+  font-weight: bold;
+  text-transform: uppercase;
+  background-color: rgba(255, 255, 255, 0.3);
+  -webkit-box-shadow: 0px 0px 21px 5px #ffffff00;
+  box-shadow: 0px 0px 21px 5px #ffffffa5;
+}
+
+@media (width < 1520px) {
+  h1 {
+    font-size: 3em;
+  }
+}
+@media (width < 1057px) {
+  h1 {
+    font-size: 2.5em;
+  }
+}
+
+@media (width < 865px) {
+  h1 {
+    font-size: 2.25em;
+  }
+}
+
+@media (width < 770px) {
+  h1 {
+    font-size: 2em;
+  }
+}
+
+@media (width < 490px) {
+  h1 {
+    font-size: 1.9em;
+  }
+}
+
+@media (width < 455px) {
+  h1 {
+    font-size: 1.7em;
+  }
+}
+
+@media (width < 400px) {
+  h1 {
+    font-size: 1.6em;
+  }
 }
 
 .image1 {
@@ -50,11 +87,4 @@ h1 {
   background-image: url(./assets/Spearfishing-with-Fish.jpg);
   -webkit-box-shadow: 0px 15px 24px 12px rgba(0, 0, 0, 0.72);
   box-shadow: 0px 15px 24px 12px rgba(0, 0, 0, 0.72);
-}
-
-h1 {
-  text-transform: uppercase;
-  /* font-size: 4rem; */
-  font-weight: bold;
-  padding: 0 2em;
 }

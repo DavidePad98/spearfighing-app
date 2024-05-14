@@ -1,0 +1,13 @@
+.form-login {
+  -webkit-box-shadow: 0px 0px 21px 5px #ffffff00;
+  box-shadow: 0px 0px 21px 5px #ffffffa5;
+  background-color: rgba(255, 255, 255, 0.674);
+}
+
+.login-page {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+  background-image: url(https://flfreedivers.com/cdn/shop/files/FLF_web_1000_spearfishing_2048_2048_2048.jpg?v=1644610203&width=2400);
+}

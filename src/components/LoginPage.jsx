@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import { getUserById, loginUser, registrationUser } from "../redux/action";
 import { useNavigate } from "react-router-dom";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
+import "../Login.css";
 
 const LoginPage = () => {
   const dispatch = useDispatch();

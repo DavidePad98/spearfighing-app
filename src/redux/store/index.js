@@ -7,6 +7,7 @@ import profileImageReducer from "../reducers/profile";
 import getUserByIdReducer from "../reducers/user";
 import postReducer from "../reducers/post";
 import commentReducer from "../reducers/comment";
+import allTicketReducer from "../reducers/allTickets";
 
 const mainReducer = combineReducers({
   users: usersReducer,
@@ -17,6 +18,7 @@ const mainReducer = combineReducers({
   user: getUserByIdReducer,
   post: postReducer,
   comment: commentReducer,
+  allTickets: allTicketReducer,
 });
 const store = configureStore({
   reducer: mainReducer,

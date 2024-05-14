@@ -55,8 +55,8 @@ const NavBar = () => {
                   <Nav.Link as={Link} to={"/"} className="white-nav_links">
                     Home
                   </Nav.Link>
-                  <Nav.Link href="#features" className="white-nav_links">
-                    Features
+                  <Nav.Link as={Link} to={"ticket"} className="white-nav_links">
+                    Esplora
                   </Nav.Link>
                   <Nav.Link href="#pricing" className="white-nav_links">
                     Pricing
@@ -74,8 +74,8 @@ const NavBar = () => {
                   <Nav.Link as={Link} to={"/"} className="white-nav_links">
                     Home
                   </Nav.Link>
-                  <Nav.Link href="#features" className="white-nav_links">
-                    Features
+                  <Nav.Link as={Link} to={"ticket"} className="white-nav_links">
+                    Esplora
                   </Nav.Link>
                   <Nav.Link href="#pricing" className="white-nav_links">
                     Pricing
