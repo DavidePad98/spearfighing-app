@@ -2,6 +2,7 @@ import { Container, Dropdown, Nav, Navbar } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { logoutUser } from "../redux/action";
+import "../Navbar.css";
 
 const NavBar = () => {
   const user = useSelector(

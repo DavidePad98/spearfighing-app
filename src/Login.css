@@ -1,7 +1,12 @@
 .form-login {
-  -webkit-box-shadow: 0px 0px 21px 5px #ffffff00;
+  /* -webkit-box-shadow: 0px 0px 21px 5px #ffffff00;
   box-shadow: 0px 0px 21px 5px #ffffffa5;
-  background-color: rgba(255, 255, 255, 0.674);
+  background-color: rgba(255, 255, 255, 0.674); */
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  background-color: rgba(255, 255, 255, 0.65);
+  border-radius: 12px;
+  border: 1px solid rgba(209, 213, 219, 0.3);
 }
 
 .login-page {

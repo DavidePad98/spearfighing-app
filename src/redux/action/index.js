@@ -25,6 +25,12 @@ export const FETCH_COMMENT_FAILURE = "FETCH_COMMENT_FAILURE";
 export const FETCH_ALL_TICKETS_REQUEST = "FETCH_ALL_TICKETS_REQUEST";
 export const FETCH_ALL_TICKETS_SUCCESS = "FETCH_ALL_TICKETS_SUCCESS";
 export const FETCH_ALL_TICKETS_FAILURE = "FETCH_ALL_TICKETS_FAILURE";
+export const FETCH_POST_BY_TICKET_REQUEST = "FETCH_POST_BY_TICKET_REQUEST";
+export const FETCH_POST_BY_TICKET_SUCCESS = "FETCH_POST_BY_TICKET_SUCCESS";
+export const FETCH_POST_BY_TICKET_FAILURE = "FETCH_POST_BY_TICKET_FAILURE";
+export const FETCH_COMMENT_X_POST_REQUEST = "FETCH_COMMENT_X_POST_REQUEST";
+export const FETCH_COMMENT_X_POST_SUCCESS = "FETCH_COMMENT_X_POST_SUCCESS";
+export const FETCH_COMMENT_X_POST_FAILURE = "FETCH_COMMENT_X_POST_FAILURE";
 
 // ALL USERS
 
@@ -383,6 +389,88 @@ export const allTicketAction = (token) => {
       dispatch(allTicketSuccess(userData));
     } catch (error) {
       dispatch(allTicketFailure(error.message));
+    }
+  };
+};
+
+// POST BY TICKET
+
+export const postsByTicketRequest = () => ({
+  type: FETCH_POST_BY_TICKET_REQUEST,
+});
+
+export const postsByTicketSuccess = (userData) => ({
+  type: FETCH_POST_BY_TICKET_SUCCESS,
+  payload: userData,
+});
+
+export const postsByTicketFailure = (error) => ({
+  type: FETCH_POST_BY_TICKET_FAILURE,
+  payload: error,
+});
+
+export const postsByTicketAction = (ticketId, token) => {
+  return async (dispatch) => {
+    dispatch(postsByTicketRequest());
+    try {
+      const response = await fetch(
+        `http://localhost:3001/posts/byTicket/${ticketId}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
+      }
+      const userData = await response.json();
+      dispatch(postsByTicketSuccess(userData));
+    } catch (error) {
+      dispatch(postsByTicketFailure(error.message));
+    }
+  };
+};
+
+// COMMENTS X POST
+
+export const postCommentsRequest = () => ({
+  type: FETCH_COMMENT_X_POST_REQUEST,
+});
+
+export const postCommentsSuccess = (userData) => ({
+  type: FETCH_COMMENT_X_POST_SUCCESS,
+  payload: userData,
+});
+
+export const postCommentsFailure = (error) => ({
+  type: FETCH_COMMENT_X_POST_FAILURE,
+  payload: error,
+});
+
+export const postCommentsAction = (postId, token) => {
+  return async (dispatch) => {
+    dispatch(postCommentsRequest());
+    try {
+      const response = await fetch(
+        `http://localhost:3001/comments/post/${postId}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
+      }
+      const userData = await response.json();
+      dispatch(postCommentsSuccess(userData));
+    } catch (error) {
+      dispatch(postCommentsFailure(error.message));
     }
   };
 };

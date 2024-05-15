@@ -8,6 +8,8 @@ import getUserByIdReducer from "../reducers/user";
 import postReducer from "../reducers/post";
 import commentReducer from "../reducers/comment";
 import allTicketReducer from "../reducers/allTickets";
+import postByTicketReducer from "../reducers/postByTicket";
+import postCommentsReducer from "../reducers/commnetByPost";
 
 const mainReducer = combineReducers({
   users: usersReducer,
@@ -19,6 +21,8 @@ const mainReducer = combineReducers({
   post: postReducer,
   comment: commentReducer,
   allTickets: allTicketReducer,
+  postXticket: postByTicketReducer,
+  commentXpost: postCommentsReducer,
 });
 const store = configureStore({
   reducer: mainReducer,

@@ -1,4 +1,46 @@
-.container {
-  margin-top: 120px;
-  font-size: 0.5em;
+.ticket-container {
+  padding: 150px 20px;
+
+  /* font-size: 2rem; */
+  background: linear-gradient(to bottom, #002369 0%, #26b3ff 50%, #000000 100%);
+}
+
+.bk {
+  background: linear-gradient(to bottom, #002369 0%, #26b3ff 50%, #000000 100%);
+}
+
+.bk-glass {
+  font-size: 2em;
+  font-weight: bold;
+  text-transform: uppercase;
+  backdrop-filter: blur(16px) saturate(180%);
+  /* -webkit-backdrop-filter: blur(16px) saturate(180%); */
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  border: 1px solid rgba(209, 213, 219, 0.3);
+}
+
+.g {
+  width: 60%;
+}
+
+h1,
+p {
+  font-size: 1rem;
+}
+
+@media (width < 700px) {
+  .bk-glass {
+    font-size: 1.5em;
+  }
+}
+@media (width < 560px) {
+  .bk-glass {
+    font-size: 1.25em;
+  }
+}
+@media (width < 488px) {
+  .bk-glass {
+    font-size: 1em;
+  }
 }
