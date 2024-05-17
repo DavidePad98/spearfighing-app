@@ -10,9 +10,12 @@ import commentReducer from "../reducers/comment";
 import allTicketReducer from "../reducers/allTickets";
 import postByTicketReducer from "../reducers/postByTicket";
 import postCommentsReducer from "../reducers/commnetByPost";
+import createTicketReducer from "../reducers/createTicket";
+import createPostReducer from "../reducers/createPost";
+import createCommentReducer from "../reducers/createComment";
 
 const mainReducer = combineReducers({
-  users: usersReducer,
+  // users: usersReducer,
   login: userLoginReducer,
   registration: userRegistrationReducer,
   tickets: ticketReducer,
@@ -23,6 +26,9 @@ const mainReducer = combineReducers({
   allTickets: allTicketReducer,
   postXticket: postByTicketReducer,
   commentXpost: postCommentsReducer,
+  createTicket: createTicketReducer,
+  createPost: createPostReducer,
+  createComment: createCommentReducer,
 });
 const store = configureStore({
   reducer: mainReducer,

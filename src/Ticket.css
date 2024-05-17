@@ -1,12 +1,16 @@
 .ticket-container {
-  padding: 150px 20px;
-
+  padding: 120px 20px;
   /* font-size: 2rem; */
   background: linear-gradient(to bottom, #002369 0%, #26b3ff 50%, #000000 100%);
 }
 
 .bk {
   background: linear-gradient(to bottom, #002369 0%, #26b3ff 50%, #000000 100%);
+}
+
+.profile_img_comm {
+  width: 30px;
+  height: 30px;
 }
 
 .bk-glass {
@@ -22,6 +26,20 @@
 
 .g {
   width: 60%;
+}
+
+.scrollable-col {
+  /* max-height: 80vh; Imposta un'altezza massima per abilitare lo scorrimento */
+  overflow-y: auto; /* Abilita lo scorrimento verticale */
+  padding-right: 15px; /* Evita la sovrapposizione con la scrollbar */
+}
+
+.p-ticket-date {
+  font-size: 0.7rem;
+}
+
+.b:hover {
+  scale: 1.2;
 }
 
 h1,

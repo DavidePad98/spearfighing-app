@@ -31,6 +31,15 @@ export const FETCH_POST_BY_TICKET_FAILURE = "FETCH_POST_BY_TICKET_FAILURE";
 export const FETCH_COMMENT_X_POST_REQUEST = "FETCH_COMMENT_X_POST_REQUEST";
 export const FETCH_COMMENT_X_POST_SUCCESS = "FETCH_COMMENT_X_POST_SUCCESS";
 export const FETCH_COMMENT_X_POST_FAILURE = "FETCH_COMMENT_X_POST_FAILURE";
+export const CREATE_TICKET_REQUEST = "CREATE_TICKET_REQUEST";
+export const CREATE_TICKET_SUCCESS = "CREATE_TICKET_SUCCESS";
+export const CREATE_TICKET_FAILURE = "CREATE_TICKET_FAILURE";
+export const CREATE_POST_REQUEST = "CREATE_POST_REQUEST";
+export const CREATE_POST_SUCCESS = "CREATE_POST_SUCCESS";
+export const CREATE_POST_FAILURE = "CREATE_POST_FAILURE";
+export const CREATE_COMMENT_REQUEST = "CREATE_COMMENT_REQUEST";
+export const CREATE_COMMENT_SUCCESS = "CREATE_COMMENT_SUCCESS";
+export const CREATE_COMMENT_FAILURE = "CREATE_COMMENT_FAILURE";
 
 // ALL USERS
 
@@ -471,6 +480,123 @@ export const postCommentsAction = (postId, token) => {
       dispatch(postCommentsSuccess(userData));
     } catch (error) {
       dispatch(postCommentsFailure(error.message));
+    }
+  };
+};
+
+// CREATE TICKET
+
+export const createTicketRequest = () => ({
+  type: CREATE_TICKET_REQUEST,
+});
+
+export const createTicketSuccess = (userData) => ({
+  type: CREATE_TICKET_SUCCESS,
+  payload: userData,
+});
+
+export const createTicketFailure = (error) => ({
+  type: CREATE_TICKET_FAILURE,
+  payload: error,
+});
+
+export const createTicketAction = (userId, token, formData) => {
+  return async (dispatch) => {
+    dispatch(createTicketRequest());
+    try {
+      const response = await fetch(`http://localhost:3001/tickets`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
+      }
+      const userData = await response.json();
+      dispatch(createTicketSuccess(userData));
+    } catch (error) {
+      dispatch(createTicketFailure(error.message));
+    }
+  };
+};
+
+// CREATE POST
+
+export const createPostRequest = () => ({
+  type: CREATE_POST_REQUEST,
+});
+
+export const createPostSuccess = (userData) => ({
+  type: CREATE_POST_SUCCESS,
+  payload: userData,
+});
+
+export const createPostFailure = (error) => ({
+  type: CREATE_POST_FAILURE,
+  payload: error,
+});
+
+export const createPostAction = (userId, token, formData) => {
+  return async (dispatch) => {
+    dispatch(createPostRequest());
+    try {
+      const response = await fetch(`http://localhost:3001/posts`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
+      }
+      const userData = await response.json();
+      dispatch(createPostSuccess(userData));
+    } catch (error) {
+      dispatch(createPostFailure(error.message));
+    }
+  };
+};
+
+// CREATE COMMENT
+
+export const createCommentRequest = () => ({
+  type: CREATE_COMMENT_REQUEST,
+});
+
+export const createCommentSuccess = (userData) => ({
+  type: CREATE_COMMENT_SUCCESS,
+  payload: userData,
+});
+
+export const createCommentFailure = (error) => ({
+  type: CREATE_COMMENT_FAILURE,
+  payload: error,
+});
+
+export const createCommentAction = (userId, token, formData) => {
+  return async (dispatch) => {
+    dispatch(createCommentRequest());
+    try {
+      const response = await fetch(`http://localhost:3001/comments`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
+      }
+      const userData = await response.json();
+      dispatch(createCommentSuccess(userData));
+    } catch (error) {
+      dispatch(createCommentFailure(error.message));
     }
   };
 };
