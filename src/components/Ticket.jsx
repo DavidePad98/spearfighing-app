@@ -5,7 +5,6 @@ import {
   Col,
   Container,
   Form,
-  Modal,
   Row,
   Spinner,
 } from "react-bootstrap";
@@ -18,7 +17,7 @@ import {
   postCommentsAction,
   postsByTicketAction,
 } from "../redux/action";
-import "../Ticket.css";
+import "../assets/sass/Ticket.scss";
 import { Link } from "react-router-dom";
 
 const Ticket = () => {
@@ -299,8 +298,60 @@ const Ticket = () => {
                         <p className="m-0">{post.text}</p>
                       </div>
                     </Card.Title>
+                    <Button onClick={() => handleCommentClick(post.id)}>
+                      <i className="bi bi-chat"></i>
+                    </Button>
 
-                    <Form className="mb-3 px-3">
+                    {visibleComments[post.id] && (
+                      <>
+                        <Form className="mb-3 px-3">
+                          <Form.Group controlId={`formCommentText_${post.id}`}>
+                            <Form.Control
+                              type="text"
+                              placeholder="Inserisci commento"
+                              value={newComment.text}
+                              onChange={(e) =>
+                                setNewComment({
+                                  ...newComment,
+                                  text: e.target.value,
+                                })
+                              }
+                            />
+                          </Form.Group>
+                          <Button
+                            variant="primary"
+                            onClick={() => handleCreateComment(post.id)}
+                          >
+                            Crea Commento
+                          </Button>
+                        </Form>
+
+                        {commentsData[post.id] &&
+                          commentsData[post.id].length > 0 && (
+                            <>
+                              {commentsData[post.id].map((comment, j) => (
+                                <div key={j} className="d-flex">
+                                  <div className="d-flex flex-row align-items-center">
+                                    <img
+                                      src={comment.author.profileImage}
+                                      alt="author"
+                                      className="profile_img_comm rounded-circle ms-3"
+                                    />
+                                  </div>
+                                  <div>
+                                    <p className="px-3 mb-0 fw-bold">
+                                      {comment.author.nickname}
+                                    </p>
+                                    <p className="px-3">{comment.text}</p>
+                                  </div>
+                                </div>
+                              ))}
+                            </>
+                          )}
+                      </>
+                    )}
+
+                    {/* <Form className="mb-3 px-3">
                       <Form.Group controlId={`formCommentText_${post.id}`}>
                         <Form.Control
                           type="text"
@@ -353,7 +404,7 @@ const Ticket = () => {
                           </div>
                         ))}
                       </>
-                    )}
+                    )} */}
                   </Card.Body>
                 </Card>
               </Col>

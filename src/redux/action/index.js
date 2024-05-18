@@ -40,6 +40,40 @@ export const CREATE_POST_FAILURE = "CREATE_POST_FAILURE";
 export const CREATE_COMMENT_REQUEST = "CREATE_COMMENT_REQUEST";
 export const CREATE_COMMENT_SUCCESS = "CREATE_COMMENT_SUCCESS";
 export const CREATE_COMMENT_FAILURE = "CREATE_COMMENT_FAILURE";
+export const UPLOAD_PROFILE_REQUEST = "UPLOAD_PROFILE_REQUEST";
+export const UPLOAD_PROFILE_SUCCESS = "UPLOAD_PROFILE_SUCCESS";
+export const UPLOAD_PROFILE_FAILURE = "UPLOAD_PROFILE_FAILURE";
+export const DELETE_POST_SUCCESS = "DELETE_POST_SUCCESS";
+export const DELETE_POST_FAILURE = "DELETE_POST_FAILURE";
+export const DELETE_TICKET_SUCCESS = "DELETE_TICKET_SUCCESS";
+export const DELETE_TICKET_FAILURE = "DELETE_TICKET_FAILURE";
+export const DELETE_COMMENT_SUCCESS = "DELETE_COMMENT_SUCCESS";
+export const DELETE_COMMENT_FAILURE = "DELETE_COMMENT_FAILURE";
+
+// VALIDATE TOKEN
+
+export const validateTokenAndFetchUser = async (token, dispatch) => {
+  try {
+    const response = await fetch("http://localhost:3001/api/auth/me", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Session expired or invalid token");
+    }
+
+    const userData = await response.json();
+    dispatch(loginSuccess("login userData", userData)); // Assumi che loginSuccess accetta i dati dell'utente e li memorizzi nello stato Redux
+  } catch (error) {
+    console.error("Error validating token and fetching user:", error);
+    localStorage.removeItem("token"); // Rimuovi il token se non è più valido
+    dispatch(loginFailure("Please login again"));
+  }
+};
 
 // ALL USERS
 
@@ -100,12 +134,12 @@ export const loginUser = (formData) => {
       }
 
       const userData = await response.json();
+      // localStorage.setItem("token", userData.authorization);
       dispatch(loginSuccess(userData));
-      console.log(userData);
-      return { success: true, payload: userData }; // Restituisci sia i dati dell'utente che la response completa
+      return { success: true, payload: userData };
     } catch (error) {
       dispatch(loginFailure(error.message));
-      return { success: false, error }; // Restituisci solo l'errore
+      return { success: false, error };
     }
   };
 };
@@ -597,6 +631,150 @@ export const createCommentAction = (userId, token, formData) => {
       dispatch(createCommentSuccess(userData));
     } catch (error) {
       dispatch(createCommentFailure(error.message));
+    }
+  };
+};
+
+// UPLOAD PROFILE
+
+export const uploadProfileRequest = () => ({
+  type: UPLOAD_PROFILE_REQUEST,
+});
+
+export const uploadProfileSuccess = (userData) => ({
+  type: UPLOAD_PROFILE_SUCCESS,
+  payload: userData,
+});
+
+export const uploadProfileFailure = (error) => ({
+  type: UPLOAD_PROFILE_FAILURE,
+  payload: error,
+});
+
+export const uploadProfile = (userId, token, formData) => {
+  return async (dispatch) => {
+    dispatch(uploadProfileRequest());
+    try {
+      const response = await fetch(`http://localhost:3001/users/${userId}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
+      }
+      const userData = await response.json();
+      dispatch(uploadProfileSuccess(userData));
+    } catch (error) {
+      dispatch(uploadProfileFailure(error.message));
+    }
+  };
+};
+
+// DELETE POST
+
+export const deletePostSuccess = (postId) => ({
+  type: DELETE_POST_SUCCESS,
+  payload: postId,
+});
+
+export const deletePostFailure = () => ({
+  type: DELETE_POST_FAILURE,
+  payload: "problem with delete",
+});
+
+export const deletePost = (postId, token) => {
+  return async (dispatch) => {
+    try {
+      const response = await fetch(`http://localhost:3001/posts/${postId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
+      }
+      // const userData = await response.json();
+      dispatch(deletePostSuccess(postId));
+    } catch (error) {
+      dispatch(deletePostFailure(error.message));
+    }
+  };
+};
+
+// DELETE TICKET
+
+export const deleteTicketSuccess = (ticketId) => ({
+  type: DELETE_TICKET_SUCCESS,
+  payload: ticketId,
+});
+
+export const deleteTicketFailure = () => ({
+  type: DELETE_TICKET_FAILURE,
+  payload: "problem with delete",
+});
+
+export const deleteTicket = (ticketId, token) => {
+  return async (dispatch) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3001/tickets/${ticketId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
+      }
+      // const userData = await response.json();
+      dispatch(deleteTicketSuccess(ticketId));
+    } catch (error) {
+      dispatch(deleteTicketFailure(error.message));
+    }
+  };
+};
+
+// DELETE COMMENT
+
+export const deleteCommentSuccess = (commentId) => ({
+  type: DELETE_COMMENT_SUCCESS,
+  payload: commentId,
+});
+
+export const deleteCommentFailure = () => ({
+  type: DELETE_COMMENT_FAILURE,
+  payload: "problem with delete",
+});
+
+export const deleteComment = (commentId, token) => {
+  return async (dispatch) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3001/comments/${commentId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
+      }
+      // const userData = await response.json();
+      dispatch(deleteCommentSuccess(commentId));
+    } catch (error) {
+      dispatch(deleteCommentFailure(error.message));
     }
   };
 };

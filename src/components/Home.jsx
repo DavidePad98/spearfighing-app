@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
-import "../Home.css";
+import "../assets/sass/Home.scss";
 
 const Home = () => {
   const { innerHeight } = window;
@@ -32,6 +32,7 @@ const Home = () => {
         }
       );
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

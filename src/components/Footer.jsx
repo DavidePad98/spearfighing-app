@@ -1,5 +1,6 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React from "react";
-import "../Footer.css"; // Importo il file CSS per lo stile del footer
+import "../assets/sass/Footer.scss"; // Importo il file CSS per lo stile del footer
 
 const Footer = () => {
   return (

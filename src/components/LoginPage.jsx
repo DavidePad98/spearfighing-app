@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { getUserById, loginUser, registrationUser } from "../redux/action";
+import { loginUser, registrationUser } from "../redux/action";
 import { useNavigate } from "react-router-dom";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
-import "../Login.css";
+import "../assets/sass/Login.scss";
 
 const LoginPage = () => {
   const dispatch = useDispatch();
@@ -43,8 +43,6 @@ const LoginPage = () => {
     e.preventDefault();
 
     const response = await dispatch(loginUser(formData));
-    console.log(response);
-    console.log(formData);
 
     if (response && response.success) {
       navigate("/");
@@ -212,10 +210,19 @@ const LoginPage = () => {
                 />
               </Form.Group>
 
-              <Button type="submit" className="fw-bold">
+              <Button
+                type="submit"
+                className="fw-bold text-primary text-black bot"
+              >
                 Login
               </Button>
-              <Button variant="link" onClick={toggleForm}>
+              <Button
+                onClick={toggleForm}
+                className="bg-transparent border-0 bot mt-1"
+              >
+                {/* <p className="i_finger m-0">
+                  <i className="bi bi-hand-index m-0"></i>
+                </p> */}
                 or Create an Account
               </Button>
             </Form>

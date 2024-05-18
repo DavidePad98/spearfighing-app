@@ -2,7 +2,7 @@ html {
   overflow-y: scroll;
   height: 100%;
   -webkit-overflow-scrolling: touch;
-  overflow-scrolling: touch;
+  // overflow-scrolling: touch;
 }
 
 .home-section {
@@ -83,13 +83,13 @@ section h1 {
 }
 
 .image1 {
-  background-image: url(./assets/spearfishing-life-slide4.jpg);
+  background-image: url(./img/spearfishing-life-slide4.jpg);
 }
 .image2 {
-  background-image: url(./assets/Spearfishing-open-water.jpg);
+  background-image: url(./img/Spearfishing-open-water.jpg);
 }
 .image3 {
-  background-image: url(./assets/Spearfishing-with-Fish.jpg);
+  background-image: url(./img/Spearfishing-with-Fish.jpg);
   -webkit-box-shadow: 0px 15px 24px 12px rgba(0, 0, 0, 0.72);
   box-shadow: 0px 15px 24px 12px rgba(0, 0, 0, 0.72);
 }
