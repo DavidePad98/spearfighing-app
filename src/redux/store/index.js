@@ -17,6 +17,8 @@ import profileModifyReducer from "../reducers/modifyProfile";
 import deletePostReducer from "../reducers/deletePost";
 import deleteTicketReducer from "../reducers/deleteTicket";
 import deleteCommentReducer from "../reducers/deleteComment";
+import ticketModReducer from "../reducers/modTicket";
+import postModReducer from "../reducers/modPost";
 
 const mainReducer = combineReducers({
   // users: usersReducer,
@@ -37,6 +39,8 @@ const mainReducer = combineReducers({
   deletePost: deletePostReducer,
   deleteTicket: deleteTicketReducer,
   deleteComment: deleteCommentReducer,
+  modTicket: ticketModReducer,
+  modPost: postModReducer,
 });
 const store = configureStore({
   reducer: mainReducer,

@@ -17,7 +17,10 @@ import {
   postXUser,
   postsByTicketAction,
   ticketXUser,
+  uploadComment,
+  uploadPost,
   uploadProfile,
+  uploadTicket,
   // uploadProfileImage,
 } from "../redux/action";
 import { useEffect, useState } from "react";
@@ -30,15 +33,11 @@ const Profile = () => {
   const posts = useSelector((state) => state.post.posts);
   const comments = useSelector((state) => state.comment.comments);
   const tickets_post = useSelector((state) => state.postXticket.ticket_posts);
-  // const user = useSelector((state) => state.user.userData);
   const dispatch = useDispatch();
 
-  // const [profileImageUrl, setProfileImageUrl] = useState("");
   const [loading, setLoading] = useState(false);
-  // const [errorMessage, setErrorMessage] = useState("");
   const [showTickets, setShowTickets] = useState(false);
   const [showPostsTicket, setShowPostsTicket] = useState(false);
-
   const [showPosts, setShowPosts] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [passwordError, setPasswordError] = useState("");
@@ -57,6 +56,31 @@ const Profile = () => {
   });
   // eslint-disable-next-line no-unused-vars
   const [selectedTicketId, setSelectedTicketId] = useState(null);
+  const [showEditTicketModal, setShowEditTicketModal] = useState(false);
+  const [currentTicket, setCurrentTicket] = useState(null);
+  const [ticketFormData, setTicketFormData] = useState({
+    title: "",
+  });
+  const [showPostModal, setShowPostModal] = useState(false);
+  const [showCommentModal, setShowCommentModal] = useState(false);
+  const [currentPost, setCurrentPost] = useState(null);
+  const [currentComment, setCurrentComment] = useState(null);
+  const [uploadFormData, setUploadFormData] = useState({
+    text: "",
+    urlContent: "",
+  });
+
+  const handleShowPostModal = (post) => {
+    setCurrentPost(post);
+    setUploadFormData({ text: post.text, urlContent: post.urlContent });
+    setShowPostModal(true);
+  };
+
+  const handleShowCommentModal = (comment) => {
+    setCurrentComment(comment);
+    setUploadFormData({ text: comment.text });
+    setShowCommentModal(true);
+  };
 
   const handleToggleTickets = () => {
     setShowTickets(!showTickets);
@@ -114,12 +138,17 @@ const Profile = () => {
     }
   }, [dispatch, login]);
 
-  const handleInputChange = (e) => {
+  const handleFormDataChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
     if (name === "password") {
       validatePassword(value);
     }
+  };
+
+  const handleUploadFormDataChange = (e) => {
+    const { name, value } = e.target;
+    setUploadFormData({ ...uploadFormData, [name]: value });
   };
 
   const handleShowPostsTicket = (ticketId) => {
@@ -139,17 +168,77 @@ const Profile = () => {
 
   const handleDeleteTicket = async (ticketId) => {
     const confirmation = window.confirm(
-      "Cancellando la discussione verranno persi tutti i post associati ad essa. Sei sicuro di voler procedere?"
+      "Attenzione! Non è possibile eliminare un ticket che contiene post."
     );
     if (confirmation) {
-      await dispatch(deleteTicket(ticketId, login.authorization));
-      dispatch(ticketXUser(login.user.user_id, login.authorization));
+      try {
+        await dispatch(deleteTicket(ticketId, login.authorization));
+        await dispatch(ticketXUser(login.user.user_id, login.authorization));
+      } catch (error) {
+        alert("Problema con l'eliminazione del ticket. Riprova più tardi.");
+      }
     }
   };
 
   const handleDeleteComment = async (commentId) => {
     await dispatch(deleteComment(commentId, login.authorization));
     dispatch(commentXUser(login.user.user_id, login.authorization));
+  };
+
+  // Metodo per aprire il modale di modifica
+  const handleShowEditTicketModal = (ticket) => {
+    setCurrentTicket(ticket);
+    setTicketFormData({ title: ticket.title });
+    setShowEditTicketModal(true);
+  };
+
+  // Metodo per chiudere il modale di modifica
+  const handleCloseEditTicketModal = () => {
+    setShowEditTicketModal(false);
+    setCurrentTicket(null);
+  };
+
+  // Metodo per gestire il cambiamento di input del form del ticket
+  const handleTicketInputChange = (e) => {
+    const { name, value } = e.target;
+    setTicketFormData({ ...ticketFormData, [name]: value });
+  };
+
+  // Metodo per inviare la richiesta di modifica del ticket
+  const handleUpdateTicket = async () => {
+    const ticketPayload = {
+      title: ticketFormData.title,
+    };
+
+    try {
+      await dispatch(
+        uploadTicket(currentTicket.id, login.authorization, ticketPayload)
+      );
+      dispatch(ticketXUser(login.user.user_id, login.authorization)); // Aggiorna i ticket dell'utente
+      handleCloseEditTicketModal();
+    } catch (error) {
+      console.error("Error updating ticket:", error);
+    }
+  };
+
+  const handleUpdatePost = async () => {
+    if (currentPost) {
+      await dispatch(
+        uploadPost(currentPost.id, login.authorization, uploadFormData)
+      );
+      dispatch(postXUser(login.user.user_id, login.authorization)); // Refresh the posts
+      setShowPostModal(false);
+    }
+  };
+
+  const handleUpdateComment = async () => {
+    if (currentComment) {
+      await dispatch(
+        uploadComment(currentComment.id, login.authorization, uploadFormData)
+      );
+      dispatch(commentXUser(login.user.user_id, login.authorization)); // Refresh the comments
+      setShowCommentModal(false);
+    }
   };
 
   if (!login) {
@@ -263,7 +352,7 @@ const Profile = () => {
                             type="text"
                             name="nickname"
                             value={formData.nickname}
-                            onChange={handleInputChange}
+                            onChange={handleFormDataChange}
                             className="rounded-5"
                           />
                         </Form.Group>
@@ -273,7 +362,7 @@ const Profile = () => {
                             type="text"
                             name="name"
                             value={formData.name}
-                            onChange={handleInputChange}
+                            onChange={handleFormDataChange}
                             className="rounded-5"
                           />
                         </Form.Group>
@@ -283,7 +372,7 @@ const Profile = () => {
                             type="text"
                             name="surname"
                             value={formData.surname}
-                            onChange={handleInputChange}
+                            onChange={handleFormDataChange}
                             className="rounded-5"
                           />
                         </Form.Group>
@@ -293,7 +382,7 @@ const Profile = () => {
                             type="email"
                             name="email"
                             value={formData.email}
-                            onChange={handleInputChange}
+                            onChange={handleFormDataChange}
                             className="rounded-5"
                           />
                         </Form.Group>
@@ -310,7 +399,7 @@ const Profile = () => {
                             type="password"
                             name="password"
                             value={formData.password}
-                            onChange={handleInputChange}
+                            onChange={handleFormDataChange}
                             className="rounded-5"
                           />
                           {passwordError && (
@@ -325,7 +414,7 @@ const Profile = () => {
                             type="text"
                             name="city"
                             value={formData.city}
-                            onChange={handleInputChange}
+                            onChange={handleFormDataChange}
                             className="rounded-5"
                           />
                         </Form.Group>
@@ -335,7 +424,7 @@ const Profile = () => {
                             type="text"
                             name="social"
                             value={formData.social}
-                            onChange={handleInputChange}
+                            onChange={handleFormDataChange}
                             className="rounded-5"
                           />
                         </Form.Group>
@@ -345,7 +434,7 @@ const Profile = () => {
                             type="text"
                             name="profileImage"
                             value={formData.profileImage}
-                            onChange={handleInputChange}
+                            onChange={handleFormDataChange}
                             className="rounded-5"
                           />
                         </Form.Group>
@@ -366,10 +455,6 @@ const Profile = () => {
           </Col>
         </Row>
 
-        {/* <Row className="flex-row g-3 mt-3">
-          
-        </Row> */}
-
         {/* MODALE TICKETS */}
 
         <Modal show={showTickets} onHide={handleToggleTickets}>
@@ -382,7 +467,10 @@ const Profile = () => {
                 <Card className="my-2 w-100">
                   <Card.Body>
                     <Card.Title className="d-flex justify-content-between">
-                      <div>{ticket.title}</div>
+                      <div className="brake-w">
+                        <div>{ticket.title}</div>
+                      </div>
+
                       <div className="d-flex flex-row align-items-center">
                         <img
                           src={ticket.user_id.profileImage}
@@ -407,12 +495,20 @@ const Profile = () => {
                         ...visualiza post
                         <i className="ms-2 bi bi-box-arrow-up-right"></i>
                       </Button>
-                      <Button
-                        className="border-0 rounded-5 trash"
-                        onClick={() => handleDeleteTicket(ticket.id)}
-                      >
-                        <i className="bi bi-trash3-fill"></i>
-                      </Button>
+                      <div>
+                        <Button
+                          className="border-0 me-2 rounded-5 trash"
+                          onClick={() => handleDeleteTicket(ticket.id)}
+                        >
+                          <i className="bi bi-trash3-fill"></i>
+                        </Button>
+                        <Button
+                          className="border-0 rounded-5"
+                          onClick={() => handleShowEditTicketModal(ticket)}
+                        >
+                          <i className="bi bi-pencil"></i>
+                        </Button>
+                      </div>
                     </div>
                   </Card.Body>
                 </Card>
@@ -421,6 +517,40 @@ const Profile = () => {
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleToggleTickets}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+        {/* MODALE EDIT TICKET */}
+        <Modal
+          show={showEditTicketModal}
+          onHide={handleCloseEditTicketModal}
+          backdrop="static"
+          keyboard={false}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Modifica Ticket</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>
+              <Form.Group controlId="formTicketTitle">
+                <Form.Label>Title</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="title"
+                  value={ticketFormData.title}
+                  onChange={handleTicketInputChange}
+                  className="rounded-5"
+                />
+              </Form.Group>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={handleUpdateTicket} disabled={loading}>
+              Update Ticket
+            </Button>
+            <Button variant="secondary" onClick={handleCloseEditTicketModal}>
               Close
             </Button>
           </Modal.Footer>
@@ -436,8 +566,11 @@ const Profile = () => {
             {showPosts && (
               <>
                 {posts.map((post) => (
-                  <Col className="d-flex justify-content-center align-items-center">
-                    <Card className="my-2 w-100" key={post.id}>
+                  <Col
+                    key={post.id}
+                    className="d-flex justify-content-center align-items-center"
+                  >
+                    <Card className="my-2 w-100">
                       {post.urlContent === "" ? (
                         ""
                       ) : (
@@ -466,7 +599,10 @@ const Profile = () => {
                         >
                           <i className="bi bi-trash3-fill"></i>
                         </Button>
-                        <Button className="border-0 rounded-5">
+                        <Button
+                          className="border-0 rounded-5"
+                          onClick={() => handleShowPostModal(post)}
+                        >
                           <i className="bi bi-pencil"></i>
                         </Button>
                       </Card.Body>
@@ -477,8 +613,51 @@ const Profile = () => {
             )}
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={!showPosts}>
+            <Button
+              variant="secondary"
+              onClick={showPosts ? handleTogglePosts : undefined}
+            >
               Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+        {/* MODALE EDIT POST */}
+
+        <Modal show={showPostModal} onHide={() => setShowPostModal(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Edit Post</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>
+              <Form.Group controlId="formText">
+                <Form.Label>Text</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="text"
+                  value={uploadFormData.text}
+                  onChange={handleUploadFormDataChange}
+                  className="rounded-5"
+                />
+              </Form.Group>
+              <Form.Group controlId="formUrlContent">
+                <Form.Label>URL Content</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="urlContent"
+                  value={uploadFormData.urlContent}
+                  onChange={handleUploadFormDataChange}
+                  className="rounded-5"
+                />
+              </Form.Group>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowPostModal(false)}>
+              Close
+            </Button>
+            <Button variant="primary" onClick={handleUpdatePost}>
+              Save Changes
             </Button>
           </Modal.Footer>
         </Modal>
@@ -524,14 +703,17 @@ const Profile = () => {
         {/* {MODALE COMMENTI} */}
         <Modal show={showComments} onHide={handleToggleComments}>
           <Modal.Header closeButton>
-            <Modal.Title>Posts</Modal.Title>
+            <Modal.Title>Commenti</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             {showComments && (
               <>
                 {comments.map((comment) => (
-                  <Col className="d-flex justify-content-center ">
-                    <Card style={{ width: "18rem" }} key={comment.id}>
+                  <Col
+                    key={comment.id}
+                    className="d-flex justify-content-center "
+                  >
+                    <Card className="w-100">
                       <Card.Body>
                         <Card.Text>Post: {comment.post.text}</Card.Text>
                         <Card.Title className="d-flex justify-content-between">
@@ -552,7 +734,10 @@ const Profile = () => {
                         >
                           <i className="bi bi-trash3-fill"></i>
                         </Button>
-                        <Button className="border-0 rounded-5">
+                        <Button
+                          className="border-0 rounded-5"
+                          onClick={() => handleShowCommentModal(comment)}
+                        >
                           <i className="bi bi-pencil"></i>
                         </Button>
                       </Card.Body>
@@ -563,42 +748,52 @@ const Profile = () => {
             )}
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={!showComments}>
+            <Button
+              variant="secondary"
+              onClick={
+                showComments ? handleToggleComments : handleClosePostsTicket
+              }
+            >
               Close
             </Button>
           </Modal.Footer>
         </Modal>
 
-        {/* <Row className="flex-row g-3 mt-3">
-          <h1 className="d-flex justify-content-center align-items-center text-white">
-            Comments
+        {/* MODALE EDIT COMMENTI */}
+
+        <Modal
+          show={showCommentModal}
+          onHide={() => setShowCommentModal(false)}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Edit Comment</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>
+              <Form.Group controlId="formText">
+                <Form.Label>Text</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="text"
+                  value={uploadFormData.text}
+                  onChange={handleUploadFormDataChange}
+                  className="rounded-5"
+                />
+              </Form.Group>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
             <Button
-              onClick={handleToggleComments}
-              className="bg-transparent border-0 d-flex align-items-center"
+              variant="secondary"
+              onClick={() => setShowCommentModal(false)}
             >
-              {showComments ? (
-                <i className="bi bi-caret-up-fill"></i>
-              ) : (
-                <i className="bi bi-caret-down-fill"></i>
-              )}
+              Close
             </Button>
-          </h1>
-          {showComments && (
-            <>
-              {comments.map((comment) => (
-                <Col className="d-flex justify-content-center ">
-                  <Card style={{ width: "18rem" }} key={comment.id}>
-                    <Card.Body>
-                      <Card.Text>{comment.text}</Card.Text>
-                      <Card.Link href="#">Card Link</Card.Link>
-                      <Card.Link href="#">Another Link</Card.Link>
-                    </Card.Body>
-                  </Card>
-                </Col>
-              ))}
-            </>
-          )}
-        </Row> */}
+            <Button variant="primary" onClick={handleUpdateComment}>
+              Save Changes
+            </Button>
+          </Modal.Footer>
+        </Modal>
       </Container>
     </>
   );

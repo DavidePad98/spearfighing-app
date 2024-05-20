@@ -4,7 +4,11 @@
   background-position: center;
   background-repeat: no-repeat;
   padding-top: 8rem;
-  height: 100vh;
+  min-height: 100vh;
+}
+
+.brake-w {
+  word-break: break-word;
 }
 
 .modal-content {

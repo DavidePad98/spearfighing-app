@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { logoutUser } from "../redux/action";
 import "../assets/sass/Navbar.scss";
+import { useState } from "react";
 
 const NavBar = () => {
   const user = useSelector(
@@ -10,7 +11,9 @@ const NavBar = () => {
   );
   const profileImage = useSelector(
     (state) => state.user.userData?.profileImage
-  ); // Ottenere l'immagine del profilo dall'archivio Redux
+  );
+
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -18,6 +21,14 @@ const NavBar = () => {
   const handleLogout = () => {
     dispatch(logoutUser());
     navigate("/");
+  };
+
+  const handleToggle = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleLinkClick = () => {
+    setIsMenuOpen(false);
   };
 
   return (
@@ -35,16 +46,18 @@ const NavBar = () => {
           <Navbar.Toggle
             aria-controls="basic-navbar-nav"
             className="ms-auto me-md-4"
+            onClick={handleToggle}
           />
 
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="me-auto">
+          <Navbar.Collapse in={isMenuOpen} id="basic-navbar-nav">
+            <Nav className="text-center">
               {user && user !== null ? (
                 <>
                   <Nav.Link
                     as={Link}
                     to={"/profile"}
                     className="white-nav_links d-md-none fs-5"
+                    onClick={handleLinkClick}
                   >
                     <img
                       src={profileImage || user.profileImage}
@@ -53,14 +66,28 @@ const NavBar = () => {
                     />
                     {user.nickname}
                   </Nav.Link>
-                  <Nav.Link as={Link} to={"/"} className="white-nav_links">
+                  <Nav.Link
+                    as={Link}
+                    to={"/"}
+                    className="white-nav_links"
+                    onClick={handleLinkClick}
+                  >
                     Home
                   </Nav.Link>
-                  <Nav.Link as={Link} to={"ticket"} className="white-nav_links">
-                    Esplora
+                  <Nav.Link
+                    as={Link}
+                    to={"ticket"}
+                    className="white-nav_links"
+                    onClick={handleLinkClick}
+                  >
+                    Discussioni
                   </Nav.Link>
-                  <Nav.Link href="#pricing" className="white-nav_links">
-                    Pricing
+                  <Nav.Link
+                    href="#pricing"
+                    className="white-nav_links"
+                    onClick={handleLinkClick}
+                  >
+                    Di Più
                   </Nav.Link>
                 </>
               ) : (
@@ -69,16 +96,31 @@ const NavBar = () => {
                     as={Link}
                     to={"/login"}
                     className="white-nav_links fw-bold d-md-none"
+                    onClick={handleLinkClick}
                   >
                     Login
                   </Nav.Link>
-                  <Nav.Link as={Link} to={"/"} className="white-nav_links">
+                  <Nav.Link
+                    as={Link}
+                    to={"/"}
+                    className="white-nav_links"
+                    onClick={handleLinkClick}
+                  >
                     Home
                   </Nav.Link>
-                  <Nav.Link as={Link} to={"ticket"} className="white-nav_links">
+                  <Nav.Link
+                    as={Link}
+                    to={"ticket"}
+                    className="white-nav_links"
+                    onClick={handleLinkClick}
+                  >
                     Esplora
                   </Nav.Link>
-                  <Nav.Link href="#pricing" className="white-nav_links">
+                  <Nav.Link
+                    href="#pricing"
+                    className="white-nav_links"
+                    onClick={handleLinkClick}
+                  >
                     Pricing
                   </Nav.Link>
                 </>

@@ -49,6 +49,15 @@ export const DELETE_TICKET_SUCCESS = "DELETE_TICKET_SUCCESS";
 export const DELETE_TICKET_FAILURE = "DELETE_TICKET_FAILURE";
 export const DELETE_COMMENT_SUCCESS = "DELETE_COMMENT_SUCCESS";
 export const DELETE_COMMENT_FAILURE = "DELETE_COMMENT_FAILURE";
+export const UPLOAD_TICKET_REQUEST = "UPLOAD_TICKET_REQUEST";
+export const UPLOAD_TICKET_SUCCESS = "UPLOAD_TICKET_SUCCESS";
+export const UPLOAD_TICKET_FAILURE = "UPLOAD_TICKET_FAILURE";
+export const UPLOAD_POST_REQUEST = "UPLOAD_POST_REQUEST";
+export const UPLOAD_POST_SUCCESS = "UPLOAD_POST_SUCCESS";
+export const UPLOAD_POST_FAILURE = "UPLOAD_POST_FAILURE";
+export const UPLOAD_COMMENT_REQUEST = "UPLOAD_COMMENT_REQUEST";
+export const UPLOAD_COMMENT_SUCCESS = "UPLOAD_COMMENT_SUCCESS";
+export const UPLOAD_COMMENT_FAILURE = "UPLOAD_COMMENT_FAILURE";
 
 // VALIDATE TOKEN
 
@@ -775,6 +784,129 @@ export const deleteComment = (commentId, token) => {
       dispatch(deleteCommentSuccess(commentId));
     } catch (error) {
       dispatch(deleteCommentFailure(error.message));
+    }
+  };
+};
+
+// UPLOAD TICKET
+
+export const uploadTicketRequest = () => ({
+  type: UPLOAD_TICKET_REQUEST,
+});
+
+export const uploadTicketSuccess = (userData) => ({
+  type: UPLOAD_TICKET_SUCCESS,
+  payload: userData,
+});
+
+export const uploadTicketFailure = (error) => ({
+  type: UPLOAD_TICKET_FAILURE,
+  payload: error,
+});
+
+export const uploadTicket = (ticketId, token, formData) => {
+  return async (dispatch) => {
+    dispatch(uploadTicketRequest());
+    try {
+      const response = await fetch(
+        `http://localhost:3001/tickets/${ticketId}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
+      }
+      const userData = await response.json();
+      dispatch(uploadTicketSuccess(userData));
+    } catch (error) {
+      dispatch(uploadTicketFailure(error.message));
+    }
+  };
+};
+
+// UPLOAD POST
+
+export const uploadPostRequest = () => ({
+  type: UPLOAD_POST_REQUEST,
+});
+
+export const uploadPostSuccess = (userData) => ({
+  type: UPLOAD_POST_SUCCESS,
+  payload: userData,
+});
+
+export const uploadPostFailure = (error) => ({
+  type: UPLOAD_POST_FAILURE,
+  payload: error,
+});
+
+export const uploadPost = (postId, token, formData) => {
+  return async (dispatch) => {
+    dispatch(uploadPostRequest());
+    try {
+      const response = await fetch(`http://localhost:3001/posts/${postId}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
+      }
+      const userData = await response.json();
+      dispatch(uploadPostSuccess(userData));
+    } catch (error) {
+      dispatch(uploadPostFailure(error.message));
+    }
+  };
+};
+
+// UPLOAD COMMENT
+
+export const uploadCommentRequest = () => ({
+  type: UPLOAD_COMMENT_REQUEST,
+});
+
+export const uploadCommentSuccess = (userData) => ({
+  type: UPLOAD_COMMENT_SUCCESS,
+  payload: userData,
+});
+
+export const uploadCommentFailure = (error) => ({
+  type: UPLOAD_COMMENT_FAILURE,
+  payload: error,
+});
+
+export const uploadComment = (commentId, token, formData) => {
+  return async (dispatch) => {
+    dispatch(uploadCommentRequest());
+    try {
+      const response = await fetch(
+        `http://localhost:3001/comments/${commentId}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
+      }
+      const userData = await response.json();
+      dispatch(uploadCommentSuccess(userData));
+    } catch (error) {
+      dispatch(uploadCommentFailure(error.message));
     }
   };
 };
