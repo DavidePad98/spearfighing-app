@@ -58,6 +58,18 @@ export const UPLOAD_POST_FAILURE = "UPLOAD_POST_FAILURE";
 export const UPLOAD_COMMENT_REQUEST = "UPLOAD_COMMENT_REQUEST";
 export const UPLOAD_COMMENT_SUCCESS = "UPLOAD_COMMENT_SUCCESS";
 export const UPLOAD_COMMENT_FAILURE = "UPLOAD_COMMENT_FAILURE";
+export const SEARCH_ALL_COMMENTS_REQUEST = "SEARCH_ALL_COMMENTS_REQUEST";
+export const SEARCH_ALL_COMMENTS_SUCCESS = "SEARCH_ALL_COMMENTS_SUCCESS";
+export const SEARCH_ALL_COMMENTS_FAILURE = "SEARCH_ALL_COMMENTS_FAILURE";
+export const SEARCH_ALL_POSTS_REQUEST = "SEARCH_ALL_POSTS_REQUEST";
+export const SEARCH_ALL_POSTS_SUCCESS = "SEARCH_ALL_POSTS_SUCCESS";
+export const SEARCH_ALL_POSTS_FAILURE = "SEARCH_ALL_POSTS_FAILURE";
+export const SEARCH_ALL_TICKETS_REQUEST = "SEARCH_ALL_TICKETS_REQUEST";
+export const SEARCH_ALL_TICKETS_SUCCESS = "SEARCH_ALL_TICKETS_SUCCESS";
+export const SEARCH_ALL_TICKETS_FAILURE = "SEARCH_ALL_TICKETS_FAILURE";
+export const SEARCH_ALL_USERS_REQUEST = "SEARCH_ALL_USERS_REQUEST";
+export const SEARCH_ALL_USERS_SUCCESS = "SEARCH_ALL_USERS_SUCCESS";
+export const SEARCH_ALL_USERS_FAILURE = "SEARCH_ALL_USERS_FAILURE";
 
 // VALIDATE TOKEN
 
@@ -82,31 +94,6 @@ export const validateTokenAndFetchUser = async (token, dispatch) => {
     localStorage.removeItem("token"); // Rimuovi il token se non è più valido
     dispatch(loginFailure("Please login again"));
   }
-};
-
-// ALL USERS
-
-export const fetchActionUsers = (token) => {
-  return async (dispatch) => {
-    try {
-      const response = await fetch("http://localhost:3001/users", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok) {
-        let data = await response.json();
-        dispatch({ type: FETCH_USER_PROFILE, payload: data.content });
-      } else {
-        console.error("Errore durante il recupero degli utenti:", response);
-      }
-    } catch (error) {
-      console.error("Errore durante il recupero degli utenti:", error);
-    }
-  };
 };
 
 // LOGIN
@@ -590,9 +577,9 @@ export const createPostAction = (userId, token, formData) => {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+          // "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: formData,
       });
       if (!response.ok) {
         throw new Error("Invalid credentials");
@@ -668,9 +655,8 @@ export const uploadProfile = (userId, token, formData) => {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: formData,
       });
       if (!response.ok) {
         throw new Error("Invalid credentials");
@@ -854,9 +840,10 @@ export const uploadPost = (postId, token, formData) => {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+          // "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        // body: JSON.stringify(formData),
+        body: formData,
       });
       if (!response.ok) {
         throw new Error("Invalid credentials");
@@ -907,6 +894,170 @@ export const uploadComment = (commentId, token, formData) => {
       dispatch(uploadCommentSuccess(userData));
     } catch (error) {
       dispatch(uploadCommentFailure(error.message));
+    }
+  };
+};
+
+// SEARCH COMMENT
+
+export const searchCommentRequest = () => ({
+  type: SEARCH_ALL_COMMENTS_REQUEST,
+});
+
+export const searchCommentSuccess = (userData) => ({
+  type: SEARCH_ALL_COMMENTS_SUCCESS,
+  payload: userData,
+});
+
+export const searchCommentFailure = (error) => ({
+  type: SEARCH_ALL_COMMENTS_FAILURE,
+  payload: error,
+});
+
+export const searchComment = (token, query) => {
+  return async (dispatch) => {
+    dispatch(searchCommentRequest());
+    try {
+      const response = await fetch(
+        `http://localhost:3001/comments/search?query=${query}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
+      }
+      const userData = await response.json();
+      dispatch(searchCommentSuccess(userData));
+    } catch (error) {
+      dispatch(searchCommentFailure(error.message));
+    }
+  };
+};
+
+// SEARCH POST
+
+export const searchPostRequest = () => ({
+  type: SEARCH_ALL_POSTS_REQUEST,
+});
+
+export const searchPostSuccess = (userData) => ({
+  type: SEARCH_ALL_POSTS_SUCCESS,
+  payload: userData,
+});
+
+export const searchPostFailure = (error) => ({
+  type: SEARCH_ALL_POSTS_FAILURE,
+  payload: error,
+});
+
+export const searchPost = (token, query) => {
+  return async (dispatch) => {
+    dispatch(searchPostRequest());
+    try {
+      const response = await fetch(
+        `http://localhost:3001/posts/search?query=${query}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
+      }
+      const userData = await response.json();
+      dispatch(searchPostSuccess(userData));
+    } catch (error) {
+      dispatch(searchPostFailure(error.message));
+    }
+  };
+};
+
+// SEARCH TICKET
+
+export const searchTicketRequest = () => ({
+  type: SEARCH_ALL_TICKETS_REQUEST,
+});
+
+export const searchTicketSuccess = (userData) => ({
+  type: SEARCH_ALL_TICKETS_SUCCESS,
+  payload: userData,
+});
+
+export const searchTicketFailure = (error) => ({
+  type: SEARCH_ALL_TICKETS_FAILURE,
+  payload: error,
+});
+
+export const searchTicket = (token, query) => {
+  return async (dispatch) => {
+    dispatch(searchTicketRequest());
+    try {
+      const response = await fetch(
+        `http://localhost:3001/tickets/search?query=${query}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
+      }
+      const userData = await response.json();
+      dispatch(searchTicketSuccess(userData));
+    } catch (error) {
+      dispatch(searchTicketFailure(error.message));
+    }
+  };
+};
+
+// SEARCH USER
+
+export const searchUserRequest = () => ({
+  type: SEARCH_ALL_USERS_REQUEST,
+});
+
+export const searchUserSuccess = (userData) => ({
+  type: SEARCH_ALL_USERS_SUCCESS,
+  payload: userData,
+});
+
+export const searchUserFailure = (error) => ({
+  type: SEARCH_ALL_USERS_FAILURE,
+  payload: error,
+});
+
+export const searchUser = (token, query) => {
+  return async (dispatch) => {
+    dispatch(searchUserRequest());
+    try {
+      const response = await fetch(
+        `http://localhost:3001/users/search?query=${query}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
+      }
+      const userData = await response.json();
+      dispatch(searchUserSuccess(userData));
+    } catch (error) {
+      dispatch(searchUserFailure(error.message));
     }
   };
 };

@@ -9,6 +9,7 @@ import NavBar from "./components/NavBar";
 import Home from "./components/Home";
 import Footer from "./components/Footer";
 import Ticket from "./components/Ticket";
+import Search from "./components/Search";
 // import { useDispatch } from "react-redux";
 // import { useEffect } from "react";
 // import { validateTokenAndFetchUser } from "./redux/action";
@@ -59,6 +60,14 @@ function App() {
           element={
             <>
               <Ticket />
+            </>
+          }
+        />
+        <Route
+          path="/search"
+          element={
+            <>
+              <Search />
             </>
           }
         />

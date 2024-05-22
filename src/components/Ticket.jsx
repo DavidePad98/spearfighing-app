@@ -13,7 +13,6 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import {
   allTicketAction,
-  commentXUser,
   createCommentAction,
   createPostAction,
   createTicketAction,
@@ -43,7 +42,7 @@ const Ticket = () => {
   const [showTicketForm, setShowTicketForm] = useState(false);
   const [showPostForm, setShowPostForm] = useState(false);
   const [newTicket, setNewTicket] = useState({ title: "" });
-  const [newPost, setNewPost] = useState({ text: "", urlContent: "" });
+  const [newPost, setNewPost] = useState({ text: "" });
   const [newComment, setNewComment] = useState({});
   const [showTickets, setShowTickets] = useState(false);
   const [showRulesModal, setShowRulesModal] = useState(false);
@@ -55,7 +54,6 @@ const Ticket = () => {
   const [currentComment, setCurrentComment] = useState(null);
   const [uploadFormData, setUploadFormData] = useState({
     text: "",
-    urlContent: "",
   });
   const [clickedPostId, setClickedPostId] = useState(null);
 
@@ -123,7 +121,7 @@ const Ticket = () => {
       user_id: login.user.user_id,
     };
     dispatch(
-      createTicketAction(login.user_user_id, login.authorization, ticketPayload)
+      createTicketAction(login.user.user_id, login.authorization, ticketPayload)
     ).then(() => {
       dispatch(allTicketAction(login.authorization));
     });
@@ -145,20 +143,21 @@ const Ticket = () => {
       return;
     }
 
-    const postPayload = {
-      text: newPost.text,
-      urlContent: newPost.urlContent,
-      ticketId: selectedTicketId,
-      authorId: login.user.user_id,
-    };
+    const formData = new FormData();
+    formData.append("text", newPost.text);
+    formData.append("ticketId", selectedTicketId);
+    formData.append("authorId", login.user.user_id);
+    if (newPost.image) {
+      formData.append("image", newPost.image);
+    }
 
     dispatch(
-      createPostAction(login.user_user_id, login.authorization, postPayload)
+      createPostAction(login.user.user_id, login.authorization, formData)
     ).then(() => {
       dispatch(postsByTicketAction(selectedTicketId, login.authorization));
     });
     setShowPostForm(false);
-    setNewPost({ text: "", urlContent: "" });
+    setNewPost({ text: "", image: null });
   };
 
   const handleCreateComment = (postId) => {
@@ -216,7 +215,7 @@ const Ticket = () => {
 
   const handleShowPostModal = (post) => {
     setCurrentPost(post);
-    setUploadFormData({ text: post.text, urlContent: post.urlContent });
+    setUploadFormData({ text: post.text });
     setShowPostModal(true);
   };
 
@@ -228,11 +227,14 @@ const Ticket = () => {
 
   const handleUpdatePost = async () => {
     if (currentPost) {
-      await dispatch(
-        uploadPost(currentPost.id, login.authorization, uploadFormData)
-      );
+      const formData = new FormData();
+      formData.append("text", uploadFormData.text);
+      if (uploadFormData.image) {
+        formData.append("image", uploadFormData.image);
+      }
+      await dispatch(uploadPost(currentPost.id, login.authorization, formData));
       setShowPostModal(false);
-      dispatch(postsByTicketAction(selectedTicketId, login.authorization)); // Refresh the posts
+      dispatch(postsByTicketAction(selectedTicketId, login.authorization));
     }
   };
 
@@ -388,15 +390,14 @@ const Ticket = () => {
                   }
                 />
               </Form.Group>
-              <Form.Group controlId="formPostUrlContent">
-                <Form.Label>URL Content</Form.Label>
+              <Form.Group controlId="formPostImage">
+                <Form.Label>Image</Form.Label>
                 <Form.Control
-                  type="text"
-                  placeholder="Enter URL"
-                  value={newPost.urlContent}
+                  type="file"
                   onChange={(e) =>
-                    setNewPost({ ...newPost, urlContent: e.target.value })
+                    setNewPost({ ...newPost, image: e.target.files[0] })
                   }
+                  accept="image/*"
                 />
               </Form.Group>
               <Button variant="primary" onClick={handleCreatePost}>
@@ -459,7 +460,7 @@ const Ticket = () => {
                       <>
                         <InputGroup
                           className="mb-3 w-100 pt-2"
-                          controlId={`formCommentText_${post.id}`}
+                          // controlId={`formCommentText_${post.id}`}
                         >
                           <Form.Control
                             className="border-0 bg-light"
@@ -620,13 +621,17 @@ const Ticket = () => {
                 className="rounded-5"
               />
             </Form.Group>
-            <Form.Group controlId="formUrlContent">
-              <Form.Label>URL Content</Form.Label>
+            <Form.Group controlId="formImage">
+              <Form.Label>Image</Form.Label>
               <Form.Control
-                type="text"
-                name="urlContent"
-                value={uploadFormData.urlContent}
-                onChange={handleUploadFormDataChange}
+                type="file"
+                name="image"
+                onChange={(e) =>
+                  setUploadFormData({
+                    ...uploadFormData,
+                    image: e.target.files[0],
+                  })
+                }
                 className="rounded-5"
               />
             </Form.Group>

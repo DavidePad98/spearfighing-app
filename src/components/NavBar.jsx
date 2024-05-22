@@ -83,6 +83,14 @@ const NavBar = () => {
                     Discussioni
                   </Nav.Link>
                   <Nav.Link
+                    as={Link}
+                    to={"search"}
+                    className="white-nav_links"
+                    onClick={handleLinkClick}
+                  >
+                    Cerca
+                  </Nav.Link>
+                  <Nav.Link
                     href="#pricing"
                     className="white-nav_links"
                     onClick={handleLinkClick}

@@ -21,7 +21,6 @@ import {
   uploadPost,
   uploadProfile,
   uploadTicket,
-  // uploadProfileImage,
 } from "../redux/action";
 import { useEffect, useState } from "react";
 import "../assets/sass/Profile.scss";
@@ -45,15 +44,16 @@ const Profile = () => {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const [formData, setFormData] = useState({
-    nickname: login.user.nickname,
-    name: login.user.name,
-    surname: login.user.surname,
-    email: login.user.email,
+    nickname: login.user.nickname || "",
+    name: login.user.name || "",
+    surname: login.user.surname || "",
+    email: login.user.email || "",
     password: "",
-    city: login.user.city,
-    social: login.user.social,
-    profileImage: login.user.profileImage,
+    city: login.user.city || "",
+    social: login.user.social || "",
+    profileImage: login.user.profileImage || null,
   });
+
   // eslint-disable-next-line no-unused-vars
   const [selectedTicketId, setSelectedTicketId] = useState(null);
   const [showEditTicketModal, setShowEditTicketModal] = useState(false);
@@ -69,6 +69,16 @@ const Profile = () => {
     text: "",
     urlContent: "",
   });
+  const [profileImage, setProfileImage] = useState(null);
+
+  useEffect(() => {
+    if (login) {
+      dispatch(getUserById(login.user.user_id, login.authorization));
+      dispatch(ticketXUser(login.user.user_id, login.authorization));
+      dispatch(postXUser(login.user.user_id, login.authorization));
+      dispatch(commentXUser(login.user.user_id, login.authorization));
+    }
+  }, [dispatch, login]);
 
   const handleShowPostModal = (post) => {
     setCurrentPost(post);
@@ -98,8 +108,22 @@ const Profile = () => {
     if (!isFormValid()) return;
     setLoading(true);
     try {
+      const formDataToSubmit = new FormData();
+      formDataToSubmit.append("nickname", formData.nickname);
+      formDataToSubmit.append("name", formData.name);
+      formDataToSubmit.append("surname", formData.surname);
+      formDataToSubmit.append("email", formData.email);
+      formDataToSubmit.append("password", formData.password);
+      formDataToSubmit.append("city", formData.city);
+      formDataToSubmit.append("social", formData.social);
+      if (formData.profileImage) {
+        formDataToSubmit.append("profileImage", formData.profileImage);
+      }
+
+      console.log([...formDataToSubmit.entries()]);
+
       await dispatch(
-        uploadProfile(login.user.user_id, login.authorization, formData)
+        uploadProfile(login.user.user_id, login.authorization, formDataToSubmit)
       );
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -107,6 +131,13 @@ const Profile = () => {
       setLoading(false);
       dispatch(getUserById(login.user.user_id, login.authorization));
     }
+  };
+
+  const handleFileChange = (e) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      profileImage: e.target.files[0],
+    }));
   };
 
   const validatePassword = (password) => {
@@ -129,18 +160,12 @@ const Profile = () => {
     );
   };
 
-  useEffect(() => {
-    if (login) {
-      dispatch(getUserById(login.user.user_id, login.authorization));
-      dispatch(ticketXUser(login.user.user_id, login.authorization));
-      dispatch(postXUser(login.user.user_id, login.authorization));
-      dispatch(commentXUser(login.user.user_id, login.authorization));
-    }
-  }, [dispatch, login]);
-
   const handleFormDataChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
     if (name === "password") {
       validatePassword(value);
     }
@@ -185,26 +210,22 @@ const Profile = () => {
     dispatch(commentXUser(login.user.user_id, login.authorization));
   };
 
-  // Metodo per aprire il modale di modifica
   const handleShowEditTicketModal = (ticket) => {
     setCurrentTicket(ticket);
     setTicketFormData({ title: ticket.title });
     setShowEditTicketModal(true);
   };
 
-  // Metodo per chiudere il modale di modifica
   const handleCloseEditTicketModal = () => {
     setShowEditTicketModal(false);
     setCurrentTicket(null);
   };
 
-  // Metodo per gestire il cambiamento di input del form del ticket
   const handleTicketInputChange = (e) => {
     const { name, value } = e.target;
     setTicketFormData({ ...ticketFormData, [name]: value });
   };
 
-  // Metodo per inviare la richiesta di modifica del ticket
   const handleUpdateTicket = async () => {
     const ticketPayload = {
       title: ticketFormData.title,
@@ -401,6 +422,7 @@ const Profile = () => {
                             value={formData.password}
                             onChange={handleFormDataChange}
                             className="rounded-5"
+                            required
                           />
                           {passwordError && (
                             <Form.Text className="text-danger">
@@ -429,12 +451,11 @@ const Profile = () => {
                           />
                         </Form.Group>
                         <Form.Group controlId="formProfileImage">
-                          <Form.Label>Profile Image URL</Form.Label>
+                          <Form.Label>Profile Image</Form.Label>
                           <Form.Control
-                            type="text"
+                            type="file"
                             name="profileImage"
-                            value={formData.profileImage}
-                            onChange={handleFormDataChange}
+                            onChange={handleFileChange}
                             className="rounded-5"
                           />
                         </Form.Group>
@@ -571,12 +592,22 @@ const Profile = () => {
                     className="d-flex justify-content-center align-items-center"
                   >
                     <Card className="my-2 w-100">
-                      {post.urlContent === "" ? (
+                      {post.filePaths && post.filePaths.length > 0
+                        ? post.filePaths.map((filePath, index) => (
+                            <Card.Img
+                              key={index}
+                              variant="top"
+                              src={`/${filePath.replace(/\\/g, "/")}`}
+                            />
+                          ))
+                        : post.urlContent && (
+                            <Card.Img variant="top" src={post.urlContent} />
+                          )}
+                      {/* {post.urlContent === "" ? (
                         ""
                       ) : (
                         <Card.Img variant="top" src={post.urlContent} />
-                      )}
-                      {/* <Card.Img variant="top" src={post.urlContent} /> */}
+                      )} */}
                       <Card.Body>
                         <div className="d-flex flex-row ">
                           <Card.Title className="me-2">
@@ -584,7 +615,7 @@ const Profile = () => {
                               src={post.author.profileImage}
                               alt="author"
                               className="profile_img_comm rounded-circle me-2"
-                            />{" "}
+                            />
                             {post.author.nickname}
                           </Card.Title>
                           <Card.Text>{post.text}</Card.Text>
@@ -640,16 +671,6 @@ const Profile = () => {
                   className="rounded-5"
                 />
               </Form.Group>
-              <Form.Group controlId="formUrlContent">
-                <Form.Label>URL Content</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="urlContent"
-                  value={uploadFormData.urlContent}
-                  onChange={handleUploadFormDataChange}
-                  className="rounded-5"
-                />
-              </Form.Group>
             </Form>
           </Modal.Body>
           <Modal.Footer>
@@ -676,7 +697,10 @@ const Profile = () => {
           </Modal.Header>
           <Modal.Body>
             {tickets_post.map((post) => (
-              <Col className="d-flex justify-content-center align-items-center">
+              <Col
+                key={post.id}
+                className="d-flex justify-content-center align-items-center"
+              >
                 <Card className="card-post mb-3" key={post.id}>
                   {post.urlContent === "" ? (
                     ""

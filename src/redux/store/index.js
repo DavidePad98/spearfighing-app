@@ -19,13 +19,12 @@ import deleteTicketReducer from "../reducers/deleteTicket";
 import deleteCommentReducer from "../reducers/deleteComment";
 import ticketModReducer from "../reducers/modTicket";
 import postModReducer from "../reducers/modPost";
+import searchReducer from "../reducers/search";
 
 const mainReducer = combineReducers({
-  // users: usersReducer,
   login: userLoginReducer,
   registration: userRegistrationReducer,
   tickets: ticketReducer,
-  // profileImageMod: profileImageReducer,
   user: getUserByIdReducer,
   post: postReducer,
   comment: commentReducer,
@@ -41,6 +40,7 @@ const mainReducer = combineReducers({
   deleteComment: deleteCommentReducer,
   modTicket: ticketModReducer,
   modPost: postModReducer,
+  search: searchReducer,
 });
 const store = configureStore({
   reducer: mainReducer,
