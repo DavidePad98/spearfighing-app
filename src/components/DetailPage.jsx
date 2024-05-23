@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   Button,
   Card,
@@ -15,6 +15,8 @@ import {
 import {
   commentXUser,
   createCommentAction,
+  deleteComment,
+  deletePost,
   getCommentById,
   getPostById,
   getTicketById,
@@ -23,6 +25,8 @@ import {
   postXUser,
   postsByTicketAction,
   ticketXUser,
+  uploadComment,
+  uploadPost,
 } from "../redux/action";
 import "../assets/sass/DetailsPage.scss";
 
@@ -40,6 +44,7 @@ const DetailPage = () => {
   const posts = useSelector((state) => state.post.posts);
   const comments = useSelector((state) => state.comment.comments);
   const allComments = useSelector((state) => state.commentXpost.post_comments);
+  const navigate = useNavigate();
 
   // eslint-disable-next-line no-unused-vars
   const [selectedTicketId, setSelectedTicketId] = useState(null);
@@ -49,6 +54,13 @@ const DetailPage = () => {
   const [visibleComments, setVisibleComments] = useState({});
   const [commentsData, setCommentsData] = useState({});
   const [newComment, setNewComment] = useState({});
+  const [showCommentModal, setShowCommentModal] = useState(false);
+  const [showPostModal, setShowPostModal] = useState(false);
+  const [currentComment, setCurrentComment] = useState(null);
+  const [currentPost, setCurrentPost] = useState(null);
+  const [uploadFormData, setUploadFormData] = useState({
+    text: "",
+  });
 
   const handleToggleTickets = () => {
     setShowTickets(!showTickets);
@@ -85,6 +97,34 @@ const DetailPage = () => {
       dispatch(postCommentsAction(postId, login.authorization));
     }
   };
+
+  const handleDeletePost = async (postId) => {
+    await dispatch(deletePost(postId, login.authorization));
+    if (currentPost && currentPost.id) {
+      dispatch(getPostById(currentPost.id, login.authorization));
+    }
+  };
+
+  const handleShowPostModal = (post) => {
+    setCurrentPost(post);
+    setUploadFormData({ text: post.text });
+    setShowPostModal(true);
+  };
+
+  const handleUpdatePost = async () => {
+    if (currentPost) {
+      const formData = new FormData();
+      formData.append("text", uploadFormData.text);
+      if (uploadFormData.image) {
+        formData.append("image", uploadFormData.image);
+      }
+      await dispatch(uploadPost(currentPost.id, login.authorization, formData));
+      setShowPostModal(false);
+      dispatch(getPostById(currentPost.id, login.authorization));
+    }
+  };
+
+  //   comment x post
 
   const handleCreateComment = (postId) => {
     const commentText = newComment[postId]?.text;
@@ -125,11 +165,32 @@ const DetailPage = () => {
     }));
   };
 
+  const handleDeleteComment = async (commentId) => {
+    await dispatch(deleteComment(commentId, login.authorization));
+    dispatch(getCommentById(commentId, login.authorization));
+  };
+
+  const handleShowCommentModal = (comment) => {
+    setCurrentComment(comment);
+    setUploadFormData({ text: comment.text });
+    setShowCommentModal(true);
+  };
+
+  const handleUpdateComment = async (commentId) => {
+    await dispatch(
+      uploadComment(commentId, login.authorization, uploadFormData)
+    );
+    dispatch(getCommentById(commentId, login.authorization)); // Refresh the comments
+    setShowCommentModal(false);
+  };
+
+  const handleUploadFormDataChange = (e) => {
+    const { name, value } = e.target;
+    setUploadFormData({ ...uploadFormData, [name]: value });
+  };
+
   useEffect(() => {
     if (login && login.authorization) {
-      console.log("Login and authorization are present.");
-      console.log("Type:", type);
-      console.log("ID:", id);
       switch (type) {
         case "user":
           dispatch(getUserById(id, login.authorization));
@@ -138,8 +199,6 @@ const DetailPage = () => {
           dispatch(commentXUser(id, login.authorization));
           break;
         case "post":
-          console.log("Fetching post by ID:", id);
-
           dispatch(getPostById(id, login.authorization));
           break;
         case "ticket":
@@ -171,179 +230,214 @@ const DetailPage = () => {
     if (error) {
       return <p>Error: {error}</p>;
     }
+    if (!details) {
+      return <p>No details available</p>;
+    }
     switch (type) {
       case "user":
+        if (!details.nickname || !details.name || !details.surname) {
+          return <p>Invalid user details</p>;
+        }
         return (
-          //   <Container fluid className="container pb-5">
-          <Row className="w-100 justify-content-center align-items-center flex-column ">
-            <Col
-              xs={12}
-              md={6}
-              lg={6}
-              className="d-flex justify-content-center "
-            >
-              <Card className="profile-card">
-                <Card.Img
-                  variant="top"
-                  src={details.profileImage}
-                  className="card-img"
-                />
-                <Card.Body className="text-center">
-                  <Card.Title>{details.nickname}</Card.Title>
-                  <Card.Text>
-                    {details.name} {details.surname}
-                  </Card.Text>
+          <>
+            <h1 className="text-white text-center mb-3 case">UTENTI</h1>
+            <Row className="w-100 justify-content-center align-items-center flex-column ">
+              <Col
+                xs={12}
+                md={6}
+                lg={6}
+                className="d-flex justify-content-center "
+              >
+                <Card className="profile-card">
+                  <Card.Img
+                    variant="top"
+                    src={details.profileImage}
+                    className="card-img"
+                  />
+                  <Card.Body className="text-center">
+                    <Card.Title>{details.nickname}</Card.Title>
+                    <Card.Text>
+                      {details.name} {details.surname}
+                    </Card.Text>
 
-                  <>
-                    <div className="d-flex flex-column mt-4">
-                      <div>
-                        <h1
-                          className="text-uppercase
+                    <>
+                      <div className="d-flex flex-column mt-4">
+                        <div>
+                          <h1
+                            className="text-uppercase
                       "
-                        >
-                          pubblicazioni:
-                        </h1>
+                          >
+                            pubblicazioni:
+                          </h1>
+                        </div>
+                        <div className="d-flex flex-column flex-sm-row ">
+                          <p className="m-3">
+                            <Button
+                              onClick={handleToggleTickets}
+                              className="text-uppercase text-black fw-bold border-0 bot"
+                            >
+                              Tickets
+                              {showTickets ? (
+                                <i className="bi bi-caret-up-fill ms-2"></i>
+                              ) : (
+                                <i className="bi bi-caret-down-fill ms-2"></i>
+                              )}
+                            </Button>
+                          </p>
+                          <p className="m-3 ">
+                            <Button
+                              onClick={handleTogglePosts}
+                              className="text-uppercase text-black fw-bold border-0 bot"
+                            >
+                              Posts
+                              {showPosts ? (
+                                <i className="bi bi-caret-up-fill ms-2"></i>
+                              ) : (
+                                <i className="bi bi-caret-down-fill ms-2"></i>
+                              )}
+                            </Button>
+                          </p>
+                          <p className="m-3 ">
+                            <Button
+                              onClick={handleToggleComments}
+                              className="text-uppercase text-black fw-bold border-0 bot"
+                            >
+                              Commenti
+                              {showComments ? (
+                                <i className="bi bi-caret-up-fill ms-2"></i>
+                              ) : (
+                                <i className="bi bi-caret-down-fill ms-2"></i>
+                              )}
+                            </Button>
+                          </p>
+                        </div>
                       </div>
-                      <div className="d-flex flex-column flex-sm-row ">
-                        <p className="m-3">
-                          <Button
-                            onClick={handleToggleTickets}
-                            className="text-uppercase text-black fw-bold border-0 bot"
-                          >
-                            Tickets
-                            {showTickets ? (
-                              <i className="bi bi-caret-up-fill ms-2"></i>
-                            ) : (
-                              <i className="bi bi-caret-down-fill ms-2"></i>
-                            )}
-                          </Button>
-                        </p>
-                        <p className="m-3 ">
-                          <Button
-                            onClick={handleTogglePosts}
-                            className="text-uppercase text-black fw-bold border-0 bot"
-                          >
-                            Posts
-                            {showPosts ? (
-                              <i className="bi bi-caret-up-fill ms-2"></i>
-                            ) : (
-                              <i className="bi bi-caret-down-fill ms-2"></i>
-                            )}
-                          </Button>
-                        </p>
-                        <p className="m-3 ">
-                          <Button
-                            onClick={handleToggleComments}
-                            className="text-uppercase text-black fw-bold border-0 bot"
-                          >
-                            Commenti
-                            {showComments ? (
-                              <i className="bi bi-caret-up-fill ms-2"></i>
-                            ) : (
-                              <i className="bi bi-caret-down-fill ms-2"></i>
-                            )}
-                          </Button>
-                        </p>
-                      </div>
-                    </div>
-                  </>
-                </Card.Body>
-              </Card>
-            </Col>
-          </Row>
-
-          /* </Container> */
+                    </>
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>{" "}
+          </>
         );
       case "post":
+        if (
+          !details.id ||
+          !details.author ||
+          !details.author.profileImage ||
+          !details.author.nickname
+        ) {
+          return <p>Invalid post details</p>;
+        }
         return (
-          <Row className="justify-content-center align-items-center flex-column ">
-            <Col sm={4}>
-              <Card className="bk-glass">
-                <Card.Img variant="top" src={details.urlContent} />
-                <Card.Body className="py-0 mt-2 px-3">
-                  <Button
-                    className="bg-transparent border-0 rounded-5 bot mb-2 bot-chat"
-                    onClick={() => handleCommentClick(details.id)}
-                  >
-                    {clickedPostId === details.id ? (
-                      <i className="bi bi-chat-fill text-info i-info"></i>
-                    ) : (
-                      <i className="bi bi-chat i-info"></i>
-                    )}
-                  </Button>
-                  <Card.Title className="d-flex flex-row justify-content-between ">
-                    <div className="d-flex flex-row justify-content-between align-items-center">
-                      <img
-                        src={details.author?.profileImage}
-                        alt="author"
-                        className="profile_img_comm rounded-circle "
-                      />
-                      <p className="pe-3 fw-bold m-0 ms-2">
-                        {details.author?.nickname}
-                      </p>
-                      <p className="m-0">{details.text}</p>
-                    </div>
-                  </Card.Title>
-
-                  {visibleComments[details.id] && (
-                    <>
-                      <InputGroup
-                        className="mb-3 w-100 pt-2"
-                        // controlId={`formCommentText_${details.id}`}
-                      >
-                        <Form.Control
-                          className="border-0 bg-light"
-                          placeholder="Inserisci commento"
-                          type="text"
-                          value={newComment[details.id]?.text || ""}
-                          onChange={(e) =>
-                            handleCommentInputChange(details.id, e.target.value)
-                          }
+          <>
+            <h1 className="text-white text-center mb-3 case">POSTS</h1>
+            <Row className="justify-content-center align-items-center flex-column ">
+              <Col sm={4}>
+                <Card className="bk-glass">
+                  <Card.Img variant="top" src={details.urlContent} />
+                  <Card.Body className="py-0 mt-2 px-3">
+                    <Button
+                      className="bg-transparent border-0 rounded-5 bot mb-2 bot-chat"
+                      onClick={() => handleCommentClick(details.id)}
+                    >
+                      {clickedPostId === details.id ? (
+                        <i className="bi bi-chat-fill text-info i-info"></i>
+                      ) : (
+                        <i className="bi bi-chat i-info"></i>
+                      )}
+                    </Button>
+                    <Card.Title className="d-flex flex-row justify-content-between ">
+                      <div className="d-flex flex-row justify-content-between align-items-center">
+                        <img
+                          src={details.author?.profileImage}
+                          alt="author"
+                          className="profile_img_comm rounded-circle "
                         />
-                        <InputGroup.Text className="p-0">
-                          <Button
-                            className="rounded-start-0"
-                            variant="primary"
-                            onClick={() => handleCreateComment(details.id)}
-                          >
-                            <i className="bi bi-send"></i>
-                          </Button>
-                        </InputGroup.Text>
-                      </InputGroup>
-                    </>
-                  )}
-                  {commentsData[details.id] &&
-                    commentsData[details.id].length > 0 && (
-                      <>
-                        {commentsData[details.id].map((comment) => (
-                          <div
-                            key={comment.id}
-                            className="d-flex justify-content-between align-items-center pb-2"
-                          >
-                            <div className="d-flex flex-row align-items-center">
-                              <div>
-                                <img
-                                  src={comment.author.profileImage}
-                                  alt="author"
-                                  className="profile_img_comm rounded-circle ms-3"
-                                />
-                              </div>
-                              <div>
-                                <p className="px-3 mb-0 fw-bold">
-                                  {comment.author.nickname}
-                                </p>
-                                <p className="px-3 m-0">{comment.text}</p>
-                              </div>
-                            </div>
+                        <p className="pe-3 fw-bold m-0 ms-2">
+                          {details.author?.nickname}
+                        </p>
+                        <p className="m-0">{details.text}</p>
+                      </div>
 
-                            {/* {comment.author.id === login.user.user_id && (
+                      {details.author.id === login.user.user_id && (
+                        <div className="me-3 ">
+                          <Button
+                            className="border-0 rounded-5 trash me-2 bot"
+                            onClick={() => handleDeletePost(details.id)}
+                          >
+                            <i className="bi bi-trash3-fill"></i>
+                          </Button>
+                          <Button
+                            className="border-0 rounded-5 bot bg-transparent bot-chat"
+                            onClick={() => handleShowPostModal(details)}
+                          >
+                            <i className="bi bi-pencil-fill text-info i-info"></i>
+                          </Button>
+                        </div>
+                      )}
+                    </Card.Title>
+
+                    {visibleComments[details.id] && (
+                      <>
+                        <InputGroup
+                          className="mb-3 w-100 pt-2"
+                          // controlId={`formCommentText_${details.id}`}
+                        >
+                          <Form.Control
+                            className="border-0 bg-light"
+                            placeholder="Inserisci commento"
+                            type="text"
+                            value={newComment[details.id]?.text || ""}
+                            onChange={(e) =>
+                              handleCommentInputChange(
+                                details.id,
+                                e.target.value
+                              )
+                            }
+                          />
+                          <InputGroup.Text className="p-0">
+                            <Button
+                              className="rounded-start-0"
+                              variant="primary"
+                              onClick={() => handleCreateComment(details.id)}
+                            >
+                              <i className="bi bi-send"></i>
+                            </Button>
+                          </InputGroup.Text>
+                        </InputGroup>
+
+                        {commentsData[details.id] &&
+                          commentsData[details.id].length > 0 && (
+                            <>
+                              {commentsData[details.id].map((comment) => (
+                                <div
+                                  key={comment.id}
+                                  className="d-flex justify-content-between align-items-center pb-2"
+                                >
+                                  <div className="d-flex flex-row align-items-center">
+                                    <div>
+                                      <img
+                                        src={comment.author.profileImage}
+                                        alt="author"
+                                        className="profile_img_comm rounded-circle ms-3"
+                                      />
+                                    </div>
+                                    <div>
+                                      <p className="px-3 mb-0 fw-bold">
+                                        {comment.author.nickname}
+                                      </p>
+                                      <p className="px-3 m-0">{comment.text}</p>
+                                    </div>
+                                  </div>
+
+                                  {comment.author.id === login.user.user_id && (
                                     <div className="me-3">
                                       <Button
                                         className="border-0 rounded-5 trash me-2 bot"
                                         onClick={() =>
                                           handleDeleteComment(
                                             comment.id,
-                                            post.id
+                                            details.id
                                           )
                                         }
                                       >
@@ -358,33 +452,249 @@ const DetailPage = () => {
                                         <i className="bi bi-pencil-fill text-info i-info"></i>
                                       </Button>
                                     </div>
-                                  )} */}
-                          </div>
-                        ))}
+                                  )}
+                                </div>
+                              ))}
+                            </>
+                          )}
                       </>
                     )}
-                </Card.Body>
-              </Card>
-            </Col>
-          </Row>
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+          </>
         );
       case "ticket":
+        if (!details.posts) {
+          return <p>No posts available</p>;
+        }
         return (
-          <Card>
-            <Card.Body>
-              <Card.Title>Ticket</Card.Title>
-              <Card.Text>{details.title}</Card.Text>
-            </Card.Body>
-          </Card>
+          <>
+            <h1 className="text-white text-center mb-3 case">TICKETS</h1>
+            <Row className="mx-3 pb-5 align-items-center justify-content-center">
+              <Card>
+                <Card.Body>
+                  <Card.Title className="d-flex justify-content-between align-items-center px-3">
+                    <div>{details.title}</div>
+                    <div className="d-flex flex-row align-items-center">
+                      <img
+                        src={details.user_id.profileImage}
+                        alt="author"
+                        className="profile_img_comm rounded-circle "
+                      />
+                      <p className="pe-3 fw-bold m-0 ms-2">
+                        {details.user_id.nickname}
+                      </p>
+                    </div>
+                  </Card.Title>
+                  <Card.Text>{details.ticketCreationDate}</Card.Text>
+                </Card.Body>
+              </Card>
+              {details.posts &&
+                details.posts.map((post) => (
+                  <Col md={3} key={post.id}>
+                    <Card className="mt-3">
+                      <Card.Img variant="top" src={post.urlContent} />
+                      <Card.Body>
+                        <Button
+                          className="bg-transparent border-0 rounded-5 bot mb-2 bot-chat"
+                          onClick={() => handleCommentClick(post.id)}
+                        >
+                          {clickedPostId === post.id ? (
+                            <i className="bi bi-chat-fill text-info i-info"></i>
+                          ) : (
+                            <i className="bi bi-chat i-info"></i>
+                          )}
+                        </Button>
+                        <Card.Title className="d-flex flex-row justify-content-between ">
+                          <div className="d-flex flex-row justify-content-between align-items-center">
+                            <img
+                              src={post.author.profileImage}
+                              alt="author"
+                              className="profile_img_comm rounded-circle "
+                            />
+                            <p className="pe-3 fw-bold m-0 ms-2">
+                              {post.author.nickname}
+                            </p>
+                            <p className="m-0">{post.text}</p>
+                          </div>
+
+                          {post.author.id === login.user.user_id && (
+                            <div className="me-3 ">
+                              <Button
+                                className="border-0 rounded-5 trash me-2 bot"
+                                onClick={() => handleDeletePost(post.id)}
+                              >
+                                <i className="bi bi-trash3-fill"></i>
+                              </Button>
+                              <Button
+                                className="border-0 rounded-5 bot bg-transparent bot-chat"
+                                onClick={() => handleShowPostModal(post)}
+                              >
+                                <i className="bi bi-pencil-fill text-info i-info"></i>
+                              </Button>
+                            </div>
+                          )}
+                        </Card.Title>
+                        {visibleComments[post.id] && (
+                          <>
+                            <InputGroup
+                              className="mb-3 w-100 pt-2"
+                              // controlId={`formCommentText_${post.id}`}
+                            >
+                              <Form.Control
+                                className="border-0 bg-light"
+                                placeholder="Inserisci commento"
+                                type="text"
+                                value={newComment[post.id]?.text || ""}
+                                onChange={(e) =>
+                                  handleCommentInputChange(
+                                    post.id,
+                                    e.target.value
+                                  )
+                                }
+                              />
+                              <InputGroup.Text className="p-0">
+                                <Button
+                                  className="rounded-start-0"
+                                  variant="primary"
+                                  onClick={() => handleCreateComment(post.id)}
+                                >
+                                  <i className="bi bi-send"></i>
+                                </Button>
+                              </InputGroup.Text>
+                            </InputGroup>
+
+                            {commentsData[post.id] &&
+                              commentsData[post.id].length > 0 && (
+                                <>
+                                  {commentsData[post.id].map((comment, j) => (
+                                    <div
+                                      key={comment.id}
+                                      className="d-flex justify-content-between align-items-center pb-2"
+                                    >
+                                      <div className="d-flex flex-row align-items-center">
+                                        <div>
+                                          <img
+                                            src={comment.author.profileImage}
+                                            alt="author"
+                                            className="profile_img_comm rounded-circle ms-3"
+                                          />
+                                        </div>
+                                        <div>
+                                          <p className="px-3 mb-0 fw-bold">
+                                            {comment.author.nickname}
+                                          </p>
+                                          <p className="px-3 m-0">
+                                            {comment.text}
+                                          </p>
+                                        </div>
+                                      </div>
+
+                                      {comment.author.id ===
+                                        login.user.user_id && (
+                                        <div className="me-3">
+                                          <Button
+                                            className="border-0 rounded-5 trash me-2 bot"
+                                            onClick={() =>
+                                              handleDeleteComment(
+                                                comment.id,
+                                                post.id
+                                              )
+                                            }
+                                          >
+                                            <i className="bi bi-trash3-fill"></i>
+                                          </Button>
+                                          <Button
+                                            className="border-0 rounded-5 bot bg-transparent bot-chat"
+                                            onClick={() =>
+                                              handleShowCommentModal(comment)
+                                            }
+                                          >
+                                            <i className="bi bi-pencil-fill text-info i-info"></i>
+                                          </Button>
+                                        </div>
+                                      )}
+                                    </div>
+                                  ))}
+                                </>
+                              )}
+                          </>
+                        )}
+                        <Card.Text className="custom-fs-6 text-end">
+                          {post.postCreationDate}
+                        </Card.Text>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                ))}
+            </Row>
+          </>
         );
       case "comment":
+        if (
+          !details.id ||
+          !details.author ||
+          !details.author.profileImage ||
+          !details.author.nickname
+        ) {
+          return <p>Invalid comment details</p>;
+        }
         return (
-          <Card>
-            <Card.Body>
-              <Card.Title>Comment</Card.Title>
-              <Card.Text>{details.text}</Card.Text>
-            </Card.Body>
-          </Card>
+          <>
+            <h1 className="text-white text-center mb-3 case">COMMENTO</h1>
+            <Row className=" justify-content-center align-items-center">
+              <Col md={4}>
+                <Card>
+                  <Card.Body>
+                    <Card.Title></Card.Title>
+                    <Card.Text className="d-flex flex-row align-items-center ">
+                      <div className="d-flex flex-row align-items-center">
+                        <img
+                          src={details.author.profileImage}
+                          alt="author"
+                          className="profile_img_comm rounded-circle "
+                        />
+                        <p className="pe-3 fw-bold m-0 ms-2">
+                          {details.author.nickname}:
+                        </p>
+                      </div>
+                      <div>{details.text}</div>
+                    </Card.Text>
+                    <Card.Text className="text-end  d-flex justify-content-between ">
+                      <p className="custom-fs-6 mt-2">
+                        Post: {details.post.text}
+                      </p>
+                      <p className="custom-fs-6">
+                        {details.commentCreationDate}
+                      </p>
+                    </Card.Text>
+                    {details.author.id === login.user.user_id && (
+                      <div className="text-end">
+                        {/* <Button
+                          className="border-0 rounded-5 trash me-2 bot"
+                          onClick={() =>
+                            handleDeleteComment(details.id, details.post.id)
+                          }
+                          as={Link}
+                          to={"/"}
+                        >
+                          <i className="bi bi-trash3-fill"></i>
+                        </Button> */}
+                        <Button
+                          className="border-0 rounded-5 bot bg-transparent bot-chat"
+                          onClick={() => handleShowCommentModal(details)}
+                        >
+                          <i className="bi bi-pencil-fill text-info i-info"></i>
+                        </Button>
+                      </div>
+                    )}
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+          </>
         );
       default:
         return null;
@@ -425,7 +735,7 @@ const DetailPage = () => {
                   key={post.id}
                   className="d-flex justify-content-center align-items-center"
                 >
-                  <Card className="my-2 w-100">
+                  <Card className="my-2 w-100 ">
                     {post.filePaths && post.filePaths.length > 0
                       ? post.filePaths.map((filePath, index) => (
                           <Card.Img
@@ -565,6 +875,53 @@ const DetailPage = () => {
         </Modal.Footer>
       </Modal>
 
+      {/* MODALE EDIT POST */}
+
+      <Modal show={showPostModal} onHide={() => setShowPostModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Post</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group controlId="formText">
+              <Form.Label>Text</Form.Label>
+              <Form.Control
+                type="text"
+                name="text"
+                value={uploadFormData.text}
+                onChange={handleUploadFormDataChange}
+                className="rounded-5"
+              />
+            </Form.Group>
+            <Form.Group controlId="formImage">
+              <Form.Label>Image</Form.Label>
+              <Form.Control
+                type="file"
+                name="image"
+                onChange={(e) =>
+                  setUploadFormData({
+                    ...uploadFormData,
+                    image: e.target.files[0],
+                  })
+                }
+                className="rounded-5"
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowPostModal(false)}>
+            Close
+          </Button>
+          <Button
+            variant="primary"
+            onClick={() => handleUpdatePost(currentPost.id)}
+          >
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
       {/* {MODALE COMMENTI} */}
       <Modal show={showComments} onHide={handleToggleComments}>
         <Modal.Header closeButton>
@@ -610,6 +967,44 @@ const DetailPage = () => {
             }
           >
             Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* MODALE EDIT COMMENTI */}
+
+      <Modal show={showCommentModal} onHide={() => setShowCommentModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Comment</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group controlId="formText">
+              <Form.Label>Text</Form.Label>
+              <Form.Control
+                type="text"
+                name="text"
+                value={uploadFormData.text}
+                onChange={handleUploadFormDataChange}
+                className="rounded-5"
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => setShowCommentModal(false)}
+          >
+            Close
+          </Button>
+          <Button
+            variant="primary"
+            onClick={() =>
+              handleUpdateComment(currentComment.id, currentComment.post.id)
+            }
+          >
+            Save Changes
           </Button>
         </Modal.Footer>
       </Modal>

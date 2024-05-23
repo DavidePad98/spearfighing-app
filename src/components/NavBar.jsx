@@ -160,12 +160,12 @@ const NavBar = () => {
                       <div className="search-results position-absolute bg-white rounded-3 mt-1 p-2">
                         {users.length > 0 && (
                           <Row className="search-section flex-column mb-2">
-                            <h6 className="fw-bold">UTENTI</h6>
+                            <h6 className="fw-bold mb-3">UTENTI</h6>
 
                             {users.map((user) => (
                               <Col
                                 key={user.id}
-                                className="bot"
+                                className="bot p-0 d-flex justify-content-center "
                                 onClick={() => handleItemClick("user", user.id)}
                               >
                                 <div className="d-flex flex-row">
@@ -194,7 +194,7 @@ const NavBar = () => {
                             {posts.map((post) => (
                               <Col
                                 key={post.id}
-                                className="bot"
+                                className="bot p-0"
                                 onClick={() => handleItemClick("post", post.id)}
                               >
                                 <p className="custom-fs-5">{post.text}</p>
@@ -216,7 +216,7 @@ const NavBar = () => {
                                   handleItemClick("ticket", ticket.id)
                                 }
                               >
-                                <div className="d-flex flex-row custom-fs-5">
+                                <div className="custom-fs-5">
                                   {ticket.title}
                                 </div>
                                 <hr className="p-0 m-0 mb-1" />
@@ -224,7 +224,6 @@ const NavBar = () => {
                             ))}
                           </Row>
                         )}
-                        <hr />
 
                         {comments.length > 0 && (
                           <Row className="search-section flex-column mb-2">
@@ -233,12 +232,12 @@ const NavBar = () => {
                             {comments.map((comment) => (
                               <Col
                                 key={comment.id}
-                                className="bot"
+                                className="bot ps-2"
                                 onClick={() =>
                                   handleItemClick("comment", comment.id)
                                 }
                               >
-                                <div className="d-flex flex-row custom-fs-5">
+                                <div className=" custom-fs-5">
                                   {comment.text}
                                 </div>
                                 <hr className="p-0 m-0 mb-1" />

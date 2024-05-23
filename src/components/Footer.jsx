@@ -102,7 +102,7 @@ const Footer = () => {
               <a>Hire</a>
             </li>
           </ul>
-          <p className="legal">© 2024 All rights reserved</p>
+          <p className="legal">© 2024 Davide Paderi</p>
         </div>
       </section>
     </footer>
