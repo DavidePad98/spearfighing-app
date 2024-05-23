@@ -4,7 +4,7 @@ import userLoginReducer from "../reducers/login";
 import userRegistrationReducer from "../reducers/registrationuser";
 import ticketReducer from "../reducers/ticket";
 // import profileImageReducer from "../reducers/profileImageMod";
-import getUserByIdReducer from "../reducers/user";
+// import getUserByIdReducer from "../reducers/user";
 import postReducer from "../reducers/post";
 import commentReducer from "../reducers/comment";
 import allTicketReducer from "../reducers/allTickets";
@@ -20,12 +20,14 @@ import deleteCommentReducer from "../reducers/deleteComment";
 import ticketModReducer from "../reducers/modTicket";
 import postModReducer from "../reducers/modPost";
 import searchReducer from "../reducers/search";
+import detailsReducer from "../reducers/detailsPage";
 
 const mainReducer = combineReducers({
   login: userLoginReducer,
   registration: userRegistrationReducer,
+  details: detailsReducer,
   tickets: ticketReducer,
-  user: getUserByIdReducer,
+  // user: getUserByIdReducer,
   post: postReducer,
   comment: commentReducer,
   allTickets: allTicketReducer,

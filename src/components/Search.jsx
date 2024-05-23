@@ -25,14 +25,14 @@ const Search = () => {
 
   const debouncedSearch = useCallback(
     debounce((query) => {
-      if (query) {
+      if (query && login && login.authorization) {
         dispatch(searchUser(login.authorization, query));
         dispatch(searchComment(login.authorization, query));
         dispatch(searchPost(login.authorization, query));
         dispatch(searchTicket(login.authorization, query));
       }
     }, 500),
-    [dispatch, login.authorization]
+    [dispatch, login]
   );
 
   const handleSearchChange = (e) => {
@@ -49,19 +49,19 @@ const Search = () => {
 
   const responsive = {
     superLargeDesktop: {
-      breakpoint: { max: 4000, min: 3000 },
+      breakpoint: { max: 4000, min: 1150 },
       items: 6,
     },
     desktop: {
-      breakpoint: { max: 3000, min: 1024 },
-      items: 5,
-    },
-    tablet: {
-      breakpoint: { max: 1024, min: 464 },
+      breakpoint: { max: 1150, min: 790 },
       items: 4,
     },
+    tablet: {
+      breakpoint: { max: 790, min: 570 },
+      items: 3,
+    },
     mobile: {
-      breakpoint: { max: 464, min: 0 },
+      breakpoint: { max: 570, min: 0 },
       items: 2,
     },
   };
@@ -99,18 +99,18 @@ const Search = () => {
           {hasResults ? (
             <>
               {users.length > 0 && (
-                <div className="mb-5">
-                  <h2 className="pb-5 mb-5 text-center pt-5">Users</h2>
-                  <Carousel responsive={responsive} arrows>
+                <div>
+                  <h2 className=" mb-5 text-center pt-5">Users</h2>
+                  <Carousel responsive={responsive} arrows className="carousel">
                     {users.map((user) => (
                       <Card
                         key={user.id}
-                        className="profile-card-s text-center bk-glass"
+                        className="profile-card-s text-center bk-glass mx-2"
                       >
                         <Card.Img
                           variant="top"
                           src={user.profileImage}
-                          className="profile-img"
+                          className="profile-card-s-img"
                         />
                         <Card.Body>
                           <Card.Title className="title-profile">
@@ -126,17 +126,39 @@ const Search = () => {
                 </div>
               )}
               {posts.length > 0 && (
-                <Row className="mb-5">
-                  <h2>Posts</h2>
-                  <ul>
+                <div>
+                  <h2 className=" mb-5 text-center pt-5">Posts</h2>
+                  <Carousel responsive={responsive} arrows className="carousel">
                     {posts.map((post) => (
-                      <li key={post.id}>{post.text}</li>
+                      <Card
+                        key={post.id}
+                        className="profile-card-s text-center bk-glass mx-2"
+                      >
+                        <Card.Img variant="top" src={post.urlContent} />
+                        <Card.Body>
+                          <Card.Title className="title-profile">
+                            {post.text}
+                          </Card.Title>
+                          <Button variant="primary" className="py-1 px-2">
+                            Vedi Post
+                          </Button>
+                        </Card.Body>
+                      </Card>
                     ))}
-                  </ul>
-                </Row>
+                  </Carousel>
+                </div>
+
+                // <Row >
+                //   <h2>Posts</h2>
+                //   <ul>
+                //     {posts.map((post) => (
+                //       <li key={post.id}>{post.text}</li>
+                //     ))}
+                //   </ul>
+                // </Row>
               )}
               {tickets.length > 0 && (
-                <Row className="mb-5">
+                <Row>
                   <h2>Tickets</h2>
                   <ul>
                     {tickets.map((ticket) => (
@@ -146,7 +168,7 @@ const Search = () => {
                 </Row>
               )}
               {comments.length > 0 && (
-                <Row className="mb-5">
+                <Row>
                   <h2>Comments</h2>
                   <ul>
                     {comments.map((comment) => (

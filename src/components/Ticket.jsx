@@ -19,7 +19,6 @@ import {
   deleteComment,
   deletePost,
   postCommentsAction,
-  postXUser,
   postsByTicketAction,
   uploadComment,
   uploadPost,
@@ -88,10 +87,10 @@ const Ticket = () => {
   }, []);
 
   useEffect(() => {
-    if (selectedTicketId) {
+    if (login && selectedTicketId) {
       dispatch(postsByTicketAction(selectedTicketId, login.authorization));
     }
-  }, [selectedTicketId, dispatch, login.authorization]);
+  }, [selectedTicketId, dispatch, login]);
 
   const handleTicketClick = (ticket) => {
     setSelectedTicket(ticket);

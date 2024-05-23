@@ -4,17 +4,18 @@
   background: linear-gradient(to bottom, #002369 0%, #26b3ff 50%, #000000 100%);
 }
 
-.profile-img {
-  width: 150px;
-}
+// .profile-img {
+//   object-fit: cover;
+// }
 
 .profile-card-s {
-  margin-bottom: 100px;
+  // margin-bottom: 100px;
   -webkit-box-shadow: 0px 0px 15px 0px #000000;
   box-shadow: 0px 0px 15px 0px #000000;
 }
 
-.profile-card-s img {
+.profile-card-s-img {
+  width: 150px;
   height: 100%;
   max-width: 280px;
   min-height: 140px;
@@ -24,6 +25,7 @@
   margin: auto;
   -webkit-box-shadow: 0px 0px 15px 0px #000000;
   box-shadow: 0px 0px 15px 0px #000000;
+  object-fit: cover;
 }
 
 .bk-glass {
@@ -37,8 +39,6 @@
   bottom: 30px;
 }
 
-.user-carousel {
-  overflow-x: auto;
-  white-space: nowrap;
-  padding-bottom: 20px;
+.carousel {
+  height: 25em;
 }

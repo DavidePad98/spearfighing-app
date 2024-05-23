@@ -70,6 +70,15 @@ export const SEARCH_ALL_TICKETS_FAILURE = "SEARCH_ALL_TICKETS_FAILURE";
 export const SEARCH_ALL_USERS_REQUEST = "SEARCH_ALL_USERS_REQUEST";
 export const SEARCH_ALL_USERS_SUCCESS = "SEARCH_ALL_USERS_SUCCESS";
 export const SEARCH_ALL_USERS_FAILURE = "SEARCH_ALL_USERS_FAILURE";
+export const GET_COMMENT_BY_ID_REQUEST = "GET_COMMENT_BY_ID_REQUEST";
+export const GET_COMMENT_BY_ID_SUCCESS = "GET_COMMENT_BY_ID_SUCCESS";
+export const GET_COMMENT_BY_ID_FAILURE = "GET_COMMENT_BY_ID_FAILURE";
+export const GET_POST_BY_ID_REQUEST = "GET_POST_BY_ID_REQUEST";
+export const GET_POST_BY_ID_SUCCESS = "GET_POST_BY_ID_SUCCESS";
+export const GET_POST_BY_ID_FAILURE = "GET_POST_BY_ID_FAILURE";
+export const GET_TICKET_BY_ID_REQUEST = "GET_TICKET_BY_ID_REQUEST";
+export const GET_TICKET_BY_ID_SUCCESS = "GET_TICKET_BY_ID_SUCCESS";
+export const GET_TICKET_BY_ID_FAILURE = "GET_TICKET_BY_ID_FAILURE";
 
 // VALIDATE TOKEN
 
@@ -225,6 +234,126 @@ export const getUserById = (userId, token) => {
       dispatch(getUserByIdSuccess(userData));
     } catch (error) {
       dispatch(getUserByIdFailure(error.message));
+    }
+  };
+};
+
+// POST BY ID
+
+export const getPostByIdRequest = () => ({
+  type: GET_POST_BY_ID_REQUEST,
+});
+
+export const getPostByIdSuccess = (postData) => ({
+  type: GET_POST_BY_ID_SUCCESS,
+  payload: postData,
+});
+
+export const getPostByIdFailure = (error) => ({
+  type: GET_POST_BY_ID_FAILURE,
+  payload: error,
+});
+
+export const getPostById = (postId, token) => {
+  return async (dispatch) => {
+    dispatch(getPostByIdRequest());
+    try {
+      const response = await fetch(`http://localhost:3001/posts/${postId}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
+      }
+      const postData = await response.json();
+      dispatch(getPostByIdSuccess(postData));
+    } catch (error) {
+      dispatch(getPostByIdFailure(error.message));
+    }
+  };
+};
+
+// TICKET BY ID
+
+export const getTicketByIdRequest = () => ({
+  type: GET_TICKET_BY_ID_REQUEST,
+});
+
+export const getTicketByIdSuccess = (ticketData) => ({
+  type: GET_TICKET_BY_ID_SUCCESS,
+  payload: ticketData,
+});
+
+export const getTicketByIdFailure = (error) => ({
+  type: GET_TICKET_BY_ID_FAILURE,
+  payload: error,
+});
+
+export const getTicketById = (ticketId, token) => {
+  return async (dispatch) => {
+    dispatch(getTicketByIdRequest());
+    try {
+      const response = await fetch(
+        `http://localhost:3001/tickets/${ticketId}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
+      }
+      const ticketData = await response.json();
+      dispatch(getTicketByIdSuccess(ticketData));
+    } catch (error) {
+      dispatch(getTicketByIdFailure(error.message));
+    }
+  };
+};
+
+// COMMENT BY ID
+
+export const getCommentByIdRequest = () => ({
+  type: GET_COMMENT_BY_ID_REQUEST,
+});
+
+export const getCommentByIdSuccess = (commentData) => ({
+  type: GET_COMMENT_BY_ID_SUCCESS,
+  payload: commentData,
+});
+
+export const getCommentByIdFailure = (error) => ({
+  type: GET_COMMENT_BY_ID_FAILURE,
+  payload: error,
+});
+
+export const getCommentById = (commentId, token) => {
+  return async (dispatch) => {
+    dispatch(getCommentByIdRequest());
+    try {
+      const response = await fetch(
+        `http://localhost:3001/comments/${commentId}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
+      }
+      const ticketData = await response.json();
+      dispatch(getCommentByIdSuccess(ticketData));
+    } catch (error) {
+      dispatch(getCommentByIdFailure(error.message));
     }
   };
 };

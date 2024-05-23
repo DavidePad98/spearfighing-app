@@ -1,18 +1,39 @@
-import { Container, Dropdown, Nav, Navbar } from "react-bootstrap";
+import {
+  Col,
+  Container,
+  Dropdown,
+  Form,
+  Nav,
+  Navbar,
+  Row,
+} from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { logoutUser } from "../redux/action";
+import {
+  logoutUser,
+  searchComment,
+  searchPost,
+  searchTicket,
+  searchUser,
+} from "../redux/action";
 import "../assets/sass/Navbar.scss";
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import { debounce } from "lodash";
 
 const NavBar = () => {
   const user = useSelector(
     (state) => state.login.userData && state.login.userData.user
   );
-  const profileImage = useSelector(
-    (state) => state.user.userData?.profileImage
-  );
+  // const profileImage = useSelector(
+  //   (state) => state.user.userData?.profileImage
+  // );
+  const login = useSelector((state) => state.login.userData);
+  const users = useSelector((state) => state.search.users);
+  const posts = useSelector((state) => state.search.posts);
+  const tickets = useSelector((state) => state.search.tickets);
+  const comments = useSelector((state) => state.search.comments);
 
+  const [query, setQuery] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navigate = useNavigate();
@@ -28,6 +49,38 @@ const NavBar = () => {
   };
 
   const handleLinkClick = () => {
+    setIsMenuOpen(false);
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedSearch = useCallback(
+    debounce((query) => {
+      if (query && login && login.authorization) {
+        const lowerCaseQuery = query.toLowerCase();
+        dispatch(searchUser(login.authorization, lowerCaseQuery));
+        dispatch(searchComment(login.authorization, lowerCaseQuery));
+        dispatch(searchPost(login.authorization, lowerCaseQuery));
+        dispatch(searchTicket(login.authorization, lowerCaseQuery));
+      }
+    }, 500),
+    [dispatch, login]
+  );
+
+  const handleSearchChange = (e) => {
+    const { value } = e.target;
+    setQuery(value);
+    debouncedSearch(value);
+  };
+
+  const hasResults =
+    users.length > 0 ||
+    posts.length > 0 ||
+    tickets.length > 0 ||
+    comments.length > 0;
+
+  const handleItemClick = (type, id) => {
+    navigate(`/details/${type}/${id}`);
+    setQuery("");
     setIsMenuOpen(false);
   };
 
@@ -60,7 +113,7 @@ const NavBar = () => {
                     onClick={handleLinkClick}
                   >
                     <img
-                      src={profileImage || user.profileImage}
+                      src={user.profileImage}
                       alt="profile_img"
                       className="profile_img rounded-circle "
                     />
@@ -83,20 +136,121 @@ const NavBar = () => {
                     Discussioni
                   </Nav.Link>
                   <Nav.Link
-                    as={Link}
-                    to={"search"}
-                    className="white-nav_links"
-                    onClick={handleLinkClick}
-                  >
-                    Cerca
-                  </Nav.Link>
-                  <Nav.Link
                     href="#pricing"
                     className="white-nav_links"
                     onClick={handleLinkClick}
                   >
                     Di Più
                   </Nav.Link>
+                  {/* --------------------------------- */}
+
+                  <Form
+                    onSubmit={(e) => e.preventDefault()}
+                    className="text-center"
+                  >
+                    <Form.Control
+                      type="text"
+                      value={query}
+                      onChange={handleSearchChange}
+                      placeholder="cerca..."
+                      className="rounded-5 mx-2"
+                    />
+
+                    {query && hasResults && (
+                      <div className="search-results position-absolute bg-white rounded-3 mt-1 p-2">
+                        {users.length > 0 && (
+                          <Row className="search-section flex-column mb-2">
+                            <h6 className="fw-bold">UTENTI</h6>
+
+                            {users.map((user) => (
+                              <Col
+                                key={user.id}
+                                className="bot"
+                                onClick={() => handleItemClick("user", user.id)}
+                              >
+                                <div className="d-flex flex-row">
+                                  <img
+                                    src={user.profileImage}
+                                    alt="profile-img"
+                                    className="img-src me-2 border border-primary"
+                                  />
+                                  <div>
+                                    <p className="fw-bold">{user.nickname}</p>
+                                    <div>
+                                      <p className="custom-fs-6">
+                                        {user.name} {user.surname}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                              </Col>
+                            ))}
+                          </Row>
+                        )}
+                        <hr />
+                        {posts.length > 0 && (
+                          <Row className="search-section flex-column mb-2">
+                            <h6 className="fw-bold">POSTS</h6>
+                            {posts.map((post) => (
+                              <Col
+                                key={post.id}
+                                className="bot"
+                                onClick={() => handleItemClick("post", post.id)}
+                              >
+                                <p className="custom-fs-5">{post.text}</p>
+                                <hr className="p-0 m-0 mb-1" />
+                              </Col>
+                            ))}
+                          </Row>
+                        )}
+
+                        {tickets.length > 0 && (
+                          <Row className="search-section flex-column mb-2 mt-3">
+                            <h6 className="fw-bold">TICKETS</h6>
+
+                            {tickets.map((ticket) => (
+                              <Col
+                                key={ticket.id}
+                                className="bot"
+                                onClick={() =>
+                                  handleItemClick("ticket", ticket.id)
+                                }
+                              >
+                                <div className="d-flex flex-row custom-fs-5">
+                                  {ticket.title}
+                                </div>
+                                <hr className="p-0 m-0 mb-1" />
+                              </Col>
+                            ))}
+                          </Row>
+                        )}
+                        <hr />
+
+                        {comments.length > 0 && (
+                          <Row className="search-section flex-column mb-2">
+                            <h6 className="fw-bold">COMMENTI</h6>
+
+                            {comments.map((comment) => (
+                              <Col
+                                key={comment.id}
+                                className="bot"
+                                onClick={() =>
+                                  handleItemClick("comment", comment.id)
+                                }
+                              >
+                                <div className="d-flex flex-row custom-fs-5">
+                                  {comment.text}
+                                </div>
+                                <hr className="p-0 m-0 mb-1" />
+                              </Col>
+                            ))}
+                          </Row>
+                        )}
+                      </div>
+                    )}
+                  </Form>
+
+                  {/* --------------------------------- */}
                 </>
               ) : (
                 <>
@@ -122,14 +276,22 @@ const NavBar = () => {
                     className="white-nav_links"
                     onClick={handleLinkClick}
                   >
-                    Esplora
+                    Discussioni
                   </Nav.Link>
+                  {/* <Nav.Link
+                    as={Link}
+                    to={"search"}
+                    className="white-nav_links"
+                    onClick={handleLinkClick}
+                  >
+                    Cerca
+                  </Nav.Link> */}
                   <Nav.Link
                     href="#pricing"
                     className="white-nav_links"
                     onClick={handleLinkClick}
                   >
-                    Pricing
+                    Di Più
                   </Nav.Link>
                 </>
               )}
@@ -140,7 +302,7 @@ const NavBar = () => {
               <>
                 <Nav.Link as={Link} to={"/profile"}>
                   <img
-                    src={profileImage || user.profileImage}
+                    src={user.profileImage}
                     alt="profile_img"
                     className="profile_img rounded-circle"
                   />

@@ -319,7 +319,7 @@ const Profile = () => {
                         >
                           Tickets
                           {showTickets ? (
-                            <i className="bi bi-caret-up-fill "></i>
+                            <i className="bi bi-caret-up-fill ms-2"></i>
                           ) : (
                             <i className="bi bi-caret-down-fill ms-2"></i>
                           )}
@@ -501,16 +501,13 @@ const Profile = () => {
                         <p className="m-0">{ticket.user_id.nickname}</p>
                       </div>
                     </Card.Title>
-                    {/* <Card.Subtitle className="mb-2 text-muted">
-                        Card Subtitle
-                      </Card.Subtitle> */}
-                    <Card.Text className="text-end">
+                    <Card.Text className="text-end custom-fs-6">
                       {ticket.ticketCreationDate}
                     </Card.Text>
                     <Card.Text className="text-end"></Card.Text>
                     <div className="d-flex justify-content-between ">
                       <Button
-                        className="bg-transparent border-0 text-secondary"
+                        className="bg-transparent border-0 text-secondary custom-fs-5"
                         onClick={() => handleShowPostsTicket(ticket.id)}
                       >
                         ...visualiza post
@@ -603,11 +600,6 @@ const Profile = () => {
                         : post.urlContent && (
                             <Card.Img variant="top" src={post.urlContent} />
                           )}
-                      {/* {post.urlContent === "" ? (
-                        ""
-                      ) : (
-                        <Card.Img variant="top" src={post.urlContent} />
-                      )} */}
                       <Card.Body>
                         <div className="d-flex flex-row ">
                           <Card.Title className="me-2">
@@ -621,7 +613,7 @@ const Profile = () => {
                           <Card.Text>{post.text}</Card.Text>
                         </div>
 
-                        <Card.Text className="text-end">
+                        <Card.Text className="text-end custom-fs-6">
                           {post.postCreationDate}
                         </Card.Text>
                         <Button
@@ -735,14 +727,16 @@ const Profile = () => {
                 {comments.map((comment) => (
                   <Col
                     key={comment.id}
-                    className="d-flex justify-content-center "
+                    className="d-flex justify-content-center pb-3"
                   >
                     <Card className="w-100">
                       <Card.Body>
-                        <Card.Text>Post: {comment.post.text}</Card.Text>
+                        <Card.Text className="custom-fs-6">
+                          Post: {comment.post.text}
+                        </Card.Text>
                         <Card.Title className="d-flex justify-content-between">
                           {comment.text}
-                          <div>
+                          <div className="custom-fs-5">
                             <img
                               src={comment.author.profileImage}
                               alt="author"
