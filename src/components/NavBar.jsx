@@ -10,6 +10,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import {
+  getUserById,
   logoutUser,
   searchComment,
   searchPost,
@@ -17,14 +18,15 @@ import {
   searchUser,
 } from "../redux/action";
 import "../assets/sass/Navbar.scss";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { debounce } from "lodash";
 
 const NavBar = () => {
-  const user = useSelector(
-    (state) => state.login.userData && state.login.userData.user
-  );
+  // const user = useSelector(
+  //   (state) => state.login.userData && state.login.userData.user
+  // );
   const login = useSelector((state) => state.login.userData);
+  const details = useSelector((state) => state.details.data);
   const users = useSelector((state) => state.search.users);
   const posts = useSelector((state) => state.search.posts);
   const tickets = useSelector((state) => state.search.tickets);
@@ -35,6 +37,16 @@ const NavBar = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  useEffect(
+    () => {
+      if (login && login.user) {
+        dispatch(getUserById(login.user.user_id, login.authorization));
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    { login, dispatch }
+  );
 
   const handleLogout = () => {
     dispatch(logoutUser());
@@ -100,7 +112,7 @@ const NavBar = () => {
 
           <Navbar.Collapse in={isMenuOpen} id="basic-navbar-nav">
             <Nav className="text-center">
-              {user && user !== null ? (
+              {login && login !== null ? (
                 <>
                   <Nav.Link
                     as={Link}
@@ -109,11 +121,15 @@ const NavBar = () => {
                     onClick={handleLinkClick}
                   >
                     <img
-                      src={user.profileImage}
+                      src={
+                        login.user.profileImage == null
+                          ? "https://picsum.photos/id/912/200"
+                          : login.user.profileImage
+                      }
                       alt="profile_img"
                       className="profile_img rounded-circle "
                     />
-                    {user.nickname}
+                    {login.user.nickname}
                   </Nav.Link>
                   <Nav.Link
                     as={Link}
@@ -138,110 +154,120 @@ const NavBar = () => {
                   >
                     Scopri di Più
                   </Nav.Link>
-                  <Form
-                    onSubmit={(e) => e.preventDefault()}
-                    className="text-center"
-                  >
-                    <Form.Control
-                      type="text"
-                      value={query}
-                      onChange={handleSearchChange}
-                      placeholder="cerca..."
-                      className="rounded-5 mx-2"
-                    />
+                  {login && (
+                    <Form
+                      onSubmit={(e) => e.preventDefault()}
+                      className="text-center"
+                    >
+                      <Form.Control
+                        type="text"
+                        value={query}
+                        onChange={handleSearchChange}
+                        placeholder="cerca..."
+                        className="rounded-5 mx-2"
+                      />
 
-                    {query && hasResults && (
-                      <div className="search-results position-absolute bg-white rounded-3 mt-1 p-2">
-                        {users.length > 0 && (
-                          <Row className="search-section flex-column mb-2">
-                            <h6 className="fw-bold mb-3">UTENTI</h6>
+                      {query && hasResults && (
+                        <div className="search-results position-absolute bg-white rounded-3 mt-1 p-2">
+                          {users.length > 0 && (
+                            <Row className="search-section flex-column mb-2">
+                              <h6 className="fw-bold mb-3">UTENTI</h6>
 
-                            {users.map((user) => (
-                              <Col
-                                key={user.id}
-                                className="bot p-0 d-flex justify-content-center "
-                                onClick={() => handleItemClick("user", user.id)}
-                              >
-                                <div className="d-flex flex-row">
-                                  <img
-                                    src={user.profileImage}
-                                    alt="profile-img"
-                                    className="img-src me-2 border border-primary"
-                                  />
-                                  <div>
-                                    <p className="fw-bold">{user.nickname}</p>
+                              {users.map((user) => (
+                                <Col
+                                  key={user.id}
+                                  className="bot p-0 d-flex justify-content-center "
+                                  onClick={() =>
+                                    handleItemClick("user", user.id)
+                                  }
+                                >
+                                  <div className="d-flex flex-row">
+                                    <img
+                                      src={
+                                        user.profileImage == null
+                                          ? "https://picsum.photos/id/912/200"
+                                          : user.profileImage
+                                      }
+                                      alt="profile-img"
+                                      className="img-src me-2 border border-primary"
+                                    />
                                     <div>
-                                      <p className="custom-fs-6">
-                                        {user.name} {user.surname}
-                                      </p>
+                                      <p className="fw-bold">{user.nickname}</p>
+                                      <div>
+                                        <p className="custom-fs-6">
+                                          {user.name} {user.surname}
+                                        </p>
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
-                              </Col>
-                            ))}
-                          </Row>
-                        )}
-                        <hr />
-                        {posts.length > 0 && (
-                          <Row className="search-section flex-column mb-2">
-                            <h6 className="fw-bold">POSTS</h6>
-                            {posts.map((post) => (
-                              <Col
-                                key={post.id}
-                                className="bot p-0"
-                                onClick={() => handleItemClick("post", post.id)}
-                              >
-                                <p className="custom-fs-5">{post.text}</p>
-                                <hr className="p-0 m-0 mb-1" />
-                              </Col>
-                            ))}
-                          </Row>
-                        )}
+                                </Col>
+                              ))}
+                            </Row>
+                          )}
+                          <hr />
+                          {posts.length > 0 && (
+                            <Row className="search-section flex-column mb-2">
+                              <h6 className="fw-bold">POSTS</h6>
+                              {posts.map((post) => (
+                                <Col
+                                  key={post.id}
+                                  className="bot p-0"
+                                  onClick={() =>
+                                    handleItemClick("post", post.id)
+                                  }
+                                >
+                                  <p className="custom-fs-5">{post.text}</p>
+                                  <hr className="p-0 m-0 mb-1" />
+                                </Col>
+                              ))}
+                            </Row>
+                          )}
 
-                        {tickets.length > 0 && (
-                          <Row className="search-section flex-column mb-2 mt-3">
-                            <h6 className="fw-bold">TICKETS</h6>
+                          {tickets.length > 0 && (
+                            <Row className="search-section flex-column mb-2 mt-3">
+                              <h6 className="fw-bold">TICKETS</h6>
 
-                            {tickets.map((ticket) => (
-                              <Col
-                                key={ticket.id}
-                                className="bot"
-                                onClick={() =>
-                                  handleItemClick("ticket", ticket.id)
-                                }
-                              >
-                                <div className="custom-fs-5">
-                                  {ticket.title}
-                                </div>
-                                <hr className="p-0 m-0 mb-1" />
-                              </Col>
-                            ))}
-                          </Row>
-                        )}
+                              {tickets.map((ticket) => (
+                                <Col
+                                  key={ticket.id}
+                                  className="bot"
+                                  onClick={() =>
+                                    handleItemClick("ticket", ticket.id)
+                                  }
+                                >
+                                  <div className="custom-fs-5">
+                                    {ticket.title}
+                                  </div>
+                                  <hr className="p-0 m-0 mb-1" />
+                                </Col>
+                              ))}
+                            </Row>
+                          )}
 
-                        {comments.length > 0 && (
-                          <Row className="search-section flex-column mb-2">
-                            <h6 className="fw-bold">COMMENTI</h6>
+                          {comments.length > 0 && (
+                            <Row className="search-section flex-column mb-2">
+                              <h6 className="fw-bold">COMMENTI</h6>
 
-                            {comments.map((comment) => (
-                              <Col
-                                key={comment.id}
-                                className="bot ps-2"
-                                onClick={() =>
-                                  handleItemClick("comment", comment.id)
-                                }
-                              >
-                                <div className=" custom-fs-5">
-                                  {comment.text}
-                                </div>
-                                <hr className="p-0 m-0 mb-1" />
-                              </Col>
-                            ))}
-                          </Row>
-                        )}
-                      </div>
-                    )}
-                  </Form>
+                              {comments.map((comment) => (
+                                <Col
+                                  key={comment.id}
+                                  className="bot ps-2"
+                                  onClick={() =>
+                                    handleItemClick("comment", comment.id)
+                                  }
+                                >
+                                  <div className=" custom-fs-5">
+                                    {comment.text}
+                                  </div>
+                                  <hr className="p-0 m-0 mb-1" />
+                                </Col>
+                              ))}
+                            </Row>
+                          )}
+                        </div>
+                      )}
+                    </Form>
+                  )}
                 </>
               ) : (
                 <>
@@ -281,11 +307,15 @@ const NavBar = () => {
             </Nav>
           </Navbar.Collapse>
           <Nav className="d-flex flex-row align-items-center  d-none d-md-flex">
-            {user && user !== null ? (
+            {login && login.user ? (
               <>
                 <Nav.Link as={Link} to={"/profile"}>
                   <img
-                    src={user.profileImage}
+                    src={
+                      login.user.profileImage == null
+                        ? "https://picsum.photos/id/912/200"
+                        : login.user.profileImage
+                    }
                     alt="profile_img"
                     className="profile_img rounded-circle"
                   />
@@ -296,7 +326,7 @@ const NavBar = () => {
                     id="dropdown-autoclose-true"
                     className="white-nav_links fw-bold text-decoration-none text-white bg-transparent border-0"
                   >
-                    {user.nickname}
+                    {login.user.nickname}
                   </Dropdown.Toggle>
 
                   <Dropdown.Menu className="position-absolute">
@@ -308,7 +338,6 @@ const NavBar = () => {
                       onClick={handleLogout}
                       className="text-danger fw-bold fs-5"
                     >
-                      {" "}
                       Logout<i class="bi bi-box-arrow-right ms-2 fs-5"></i>
                     </Dropdown.Item>
                   </Dropdown.Menu>

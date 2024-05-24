@@ -196,6 +196,20 @@ const DetailPage = () => {
     setUploadFormData({ ...uploadFormData, [name]: value });
   };
 
+  const handleCommentPostClick = (postId) => {
+    navigate(`/details/post/${postId}`);
+    setShowComments(false);
+  };
+
+  const handlePostClick = (postId) => {
+    navigate(`/details/post/${postId}`);
+  };
+
+  const handleTicketClick = (ticketId) => {
+    navigate(`/details/ticket/${ticketId}`);
+    setShowTickets(false);
+  };
+
   useEffect(() => {
     if (login && login.authorization) {
       switch (type) {
@@ -258,7 +272,11 @@ const DetailPage = () => {
                 <Card className="profile-card">
                   <Card.Img
                     variant="top"
-                    src={details.profileImage}
+                    src={
+                      details.profileImage == null
+                        ? "https://picsum.photos/id/912/200"
+                        : details.profileImage
+                    }
                     className="card-img"
                   />
                   <Card.Body className="text-center">
@@ -356,7 +374,11 @@ const DetailPage = () => {
                     <Card.Title className="d-flex flex-row justify-content-between ">
                       <div className="d-flex flex-row justify-content-between align-items-center">
                         <img
-                          src={details.author?.profileImage}
+                          src={
+                            details.author?.profileImage == null
+                              ? "https://picsum.photos/id/912/200"
+                              : details.author?.profileImage
+                          }
                           alt="author"
                           className="profile_img_comm rounded-circle "
                         />
@@ -421,16 +443,22 @@ const DetailPage = () => {
                                   <div className="d-flex flex-row align-items-center">
                                     <div>
                                       <img
-                                        src={comment.author.profileImage}
+                                        src={
+                                          comment.author.profileImage == null
+                                            ? "https://picsum.photos/id/912/200"
+                                            : comment.author.profileImage
+                                        }
                                         alt="author"
                                         className="profile_img_comm rounded-circle ms-3"
                                       />
                                     </div>
                                     <div>
-                                      <p className="px-3 mb-0 fw-bold">
+                                      <p className="px-3 mb-0 fw-bold custom-fs-5">
                                         {comment.author.nickname}
                                       </p>
-                                      <p className="px-3 m-0">{comment.text}</p>
+                                      <p className="px-3 m-0 fw-medium">
+                                        {comment.text}
+                                      </p>
                                     </div>
                                   </div>
 
@@ -483,7 +511,11 @@ const DetailPage = () => {
                     <div>{details.title}</div>
                     <div className="d-flex flex-row align-items-center">
                       <img
-                        src={details.user_id.profileImage}
+                        src={
+                          details.user_id.profileImage == null
+                            ? "https://picsum.photos/id/912/200"
+                            : details.user_id.profileImage
+                        }
                         alt="author"
                         className="profile_img_comm rounded-circle "
                       />
@@ -516,7 +548,11 @@ const DetailPage = () => {
                         <Card.Title className="d-flex flex-row justify-content-between ">
                           <div className="d-flex flex-row justify-content-between align-items-center">
                             <img
-                              src={post.author.profileImage}
+                              src={
+                                post.author.profileImage == null
+                                  ? "https://picsum.photos/id/912/200"
+                                  : post.author.profileImage
+                              }
                               alt="author"
                               className="profile_img_comm rounded-circle "
                             />
@@ -580,7 +616,12 @@ const DetailPage = () => {
                                       <div className="d-flex flex-row align-items-center">
                                         <div>
                                           <img
-                                            src={comment.author.profileImage}
+                                            src={
+                                              comment.author.profileImage ==
+                                              null
+                                                ? "https://picsum.photos/id/912/200"
+                                                : comment.author.profileImage
+                                            }
                                             alt="author"
                                             className="profile_img_comm rounded-circle ms-3"
                                           />
@@ -640,7 +681,9 @@ const DetailPage = () => {
           !details.id ||
           !details.author ||
           !details.author.profileImage ||
-          !details.author.nickname
+          !details.author.nickname ||
+          !details.post ||
+          !details.post.text
         ) {
           return <p>Invalid comment details</p>;
         }
@@ -655,7 +698,11 @@ const DetailPage = () => {
                     <Card.Text className="d-flex flex-row align-items-center ">
                       <div className="d-flex flex-row align-items-center">
                         <img
-                          src={details.author.profileImage}
+                          src={
+                            details.author.profileImage == null
+                              ? "https://picsum.photos/id/912/200"
+                              : details.author.profileImage
+                          }
                           alt="author"
                           className="profile_img_comm rounded-circle "
                         />
@@ -666,12 +713,15 @@ const DetailPage = () => {
                       <div>{details.text}</div>
                     </Card.Text>
                     <Card.Text className="text-end  d-flex justify-content-between ">
-                      <p className="custom-fs-6 mt-2">
-                        Post: {details.post.text}
-                      </p>
-                      <p className="custom-fs-6">
+                      <span className="custom-fs-6 mt-2">
+                        Post:{" "}
+                        {details.post
+                          ? details.post.text
+                          : "No post text available"}
+                      </span>
+                      <span className="custom-fs-6">
                         {details.commentCreationDate}
-                      </p>
+                      </span>
                     </Card.Text>
                     {details.author.id === login.user.user_id && (
                       <div className="text-end">
@@ -728,7 +778,11 @@ const DetailPage = () => {
                   key={post.id}
                   className="d-flex justify-content-center align-items-center"
                 >
-                  <Card className="my-2 w-100 ">
+                  <Card
+                    className="my-2 w-100 "
+                    style={{ cursor: "pointer" }}
+                    onClick={() => handlePostClick(post.id)}
+                  >
                     {post.filePaths && post.filePaths.length > 0
                       ? post.filePaths.map((filePath, index) => (
                           <Card.Img
@@ -742,11 +796,15 @@ const DetailPage = () => {
                         )}
                     <Card.Body>
                       <div className="d-flex flex-row ">
-                        <Card.Title className="me-2">
+                        <Card.Title className="me-2 custom-fs-5 d-flex flex-row align-items-center ">
                           <img
-                            src={post.author.profileImage}
+                            src={
+                              post.author.profileImage == null
+                                ? "https://picsum.photos/id/912/200"
+                                : post.author.profileImage
+                            }
                             alt="author"
-                            className="profile_img_comm rounded-circle me-2"
+                            className="profile_img_comm rounded-circle  me-2"
                           />
                           {post.author.nickname}
                         </Card.Title>
@@ -791,11 +849,17 @@ const DetailPage = () => {
 
                     <div className="d-flex flex-row align-items-center">
                       <img
-                        src={ticket.user_id.profileImage}
+                        src={
+                          ticket.user_id.profileImage == null
+                            ? "https://picsum.photos/id/912/200"
+                            : ticket.user_id.profileImage
+                        }
                         alt="author"
                         className="profile_img_comm rounded-circle me-2"
                       />
-                      <p className="m-0">{ticket.user_id.nickname}</p>
+                      <p className="m-0 custom-fs-5">
+                        {ticket.user_id.nickname}
+                      </p>
                     </div>
                   </Card.Title>
                   <Card.Text className="text-end custom-fs-6">
@@ -809,6 +873,12 @@ const DetailPage = () => {
                     >
                       ...visualiza post
                       <i className="ms-2 bi bi-box-arrow-up-right"></i>
+                    </Button>
+                    <Button
+                      className="border-0 rounded-5 text-primary bg-transparent pr-hover"
+                      onClick={() => handleTicketClick(ticket.id)}
+                    >
+                      <i className="bi bi-box-arrow-up-right"></i>
                     </Button>
                   </div>
                 </Card.Body>
@@ -913,6 +983,7 @@ const DetailPage = () => {
       </Modal>
 
       {/* {MODALE COMMENTI} */}
+
       <Modal show={showComments} onHide={handleToggleComments}>
         <Modal.Header closeButton>
           <Modal.Title>Commenti</Modal.Title>
@@ -927,14 +998,34 @@ const DetailPage = () => {
                 >
                   <Card className="w-100">
                     <Card.Body>
-                      <Card.Text className="custom-fs-6">
+                      <Card.Text
+                        style={{ cursor: "pointer" }}
+                        onClick={() => handleCommentPostClick(comment.post.id)}
+                        className="custom-fs-6 text-primary d-flex flex-row align-items-center "
+                      >
                         Post: {comment.post.text}
+                        <div className="ms-2 d-flex  flex-row align-items-center ">
+                          <img
+                            src={
+                              comment.post.author.profileImage == null
+                                ? "https://picsum.photos/id/912/200"
+                                : comment.post.author.profileImage
+                            }
+                            alt="author"
+                            className="micro-img rounded-circle me-2"
+                          />
+                          {comment.post.author.nickname}
+                        </div>
                       </Card.Text>
                       <Card.Title className="d-flex justify-content-between">
                         {comment.text}
                         <div className="custom-fs-5">
                           <img
-                            src={comment.author.profileImage}
+                            src={
+                              comment.author.profileImage == null
+                                ? "https://picsum.photos/id/912/200"
+                                : comment.author.profileImage
+                            }
                             alt="author"
                             className="profile_img_comm rounded-circle me-2"
                           />

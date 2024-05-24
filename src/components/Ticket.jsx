@@ -286,7 +286,10 @@ const Ticket = () => {
       </Row>
 
       <Row className="justify-content-between mt-3">
-        <Col md={3} className="mb-5 px-3 scrollable-col ticket-col bk-glass">
+        <Col
+          md={3}
+          className="mb-5 pb-3 px-3 scrollable-col ticket-col bk-glass"
+        >
           <div className="d-flex justify-content-between align-items-center py-3">
             <h1 className="d-none d-md-block fw-bold ">TICKETS</h1>
             <Button
@@ -343,11 +346,15 @@ const Ticket = () => {
                         <h1>{ticket.title}</h1>
                       </Col>
                       <Col className="d-flex justify-content-end align-items-center flex-row">
-                        <p className="m-0 pe-2 fw-bold ">
+                        <p className="m-0 pe-2 fw-bold custom-fs-5">
                           @{ticket.user_id.nickname}
                         </p>
                         <img
-                          src={ticket.user_id.profileImage}
+                          src={
+                            ticket.user_id.profileImage == null
+                              ? "https://picsum.photos/id/912/200"
+                              : ticket.user_id.profileImage
+                          }
                           alt="author"
                           className="profile_img_comm rounded-circle"
                         />
@@ -361,7 +368,7 @@ const Ticket = () => {
             </>
           )}
         </Col>
-        <Col lg={6} className="px-3 w-c bk-glass">
+        <Col lg={5} className="px-3 w-c bk-glass">
           <div className="d-flex justify-content-between align-items-center py-3">
             <h1 className="fw-bold">
               POSTS {selectedTicket && `- ${selectedTicket.title}`}
@@ -410,49 +417,62 @@ const Ticket = () => {
           ) : (
             posts &&
             posts.map((post) => (
-              <Col key={post.id} className=" rounded text-break my-3">
-                <Card className="bk-glass">
+              <Col
+                key={post.id}
+                className="d-flex justify-content-center rounded text-break my-3"
+              >
+                <Card className="bk-glass w-50">
                   <Card.Img variant="top" src={post.urlContent} />
-                  <Card.Body className="py-0 mt-2 px-3">
-                    <Button
-                      className="bg-transparent border-0 rounded-5 bot mb-2 bot-chat"
-                      onClick={() => handleCommentClick(post.id)}
-                    >
-                      {clickedPostId === post.id ? (
-                        <i className="bi bi-chat-fill text-info i-info"></i>
-                      ) : (
-                        <i className="bi bi-chat i-info"></i>
-                      )}
-                    </Button>
+                  <Card.Body className="py-0 mt-2 px-3 pb-4">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <div>
+                        <Button
+                          className="bg-transparent border-0 rounded-5 bot mb-2 bot-chat"
+                          onClick={() => handleCommentClick(post.id)}
+                        >
+                          {clickedPostId === post.id ? (
+                            <i className="bi bi-chat-fill text-info i-info"></i>
+                          ) : (
+                            <i className="bi bi-chat i-info"></i>
+                          )}
+                        </Button>
+                      </div>
+                      <div>
+                        {post.author.id === login.user.user_id && (
+                          <div className="me-3 d-flex flex-row align-items-center">
+                            <Button
+                              className="border-0 rounded-5 trash me-2 bot"
+                              onClick={() => handleDeletePost(post.id)}
+                            >
+                              <i className="bi bi-trash3-fill"></i>
+                            </Button>
+                            <Button
+                              className="border-0 rounded-5 bot bg-transparent bot-chat"
+                              onClick={() => handleShowPostModal(post)}
+                            >
+                              <i className="bi bi-pencil-fill text-info i-info"></i>
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
                     <Card.Title className="d-flex flex-row justify-content-between ">
                       <div className="d-flex flex-row justify-content-between align-items-center">
                         <img
-                          src={post.author.profileImage}
+                          src={
+                            post.author.profileImage == null
+                              ? "https://picsum.photos/id/912/200"
+                              : post.author.profileImage
+                          }
                           alt="author"
-                          className="profile_img_comm rounded-circle "
+                          className="profile_img_comm rounded-circle"
                         />
-                        <p className="pe-3 fw-bold m-0 ms-2">
+                        <p className="pe-3 fw-bold m-0 ms-2 custom-fs-5 p-custom">
                           {post.author.nickname}
                         </p>
                         <p className="m-0">{post.text}</p>
                       </div>
-
-                      {post.author.id === login.user.user_id && (
-                        <div className="me-3 ">
-                          <Button
-                            className="border-0 rounded-5 trash me-2 bot"
-                            onClick={() => handleDeletePost(post.id)}
-                          >
-                            <i className="bi bi-trash3-fill"></i>
-                          </Button>
-                          <Button
-                            className="border-0 rounded-5 bot bg-transparent bot-chat"
-                            onClick={() => handleShowPostModal(post)}
-                          >
-                            <i className="bi bi-pencil-fill text-info i-info"></i>
-                          </Button>
-                        </div>
-                      )}
                     </Card.Title>
 
                     {visibleComments[post.id] && (
@@ -489,16 +509,22 @@ const Ticket = () => {
                                   <div className="d-flex flex-row align-items-center">
                                     <div>
                                       <img
-                                        src={comment.author.profileImage}
+                                        src={
+                                          comment.author.profileImage == null
+                                            ? "https://picsum.photos/id/912/200"
+                                            : comment.author.profileImage
+                                        }
                                         alt="author"
                                         className="profile_img_comm rounded-circle ms-3"
                                       />
                                     </div>
                                     <div>
-                                      <p className="px-3 mb-0 fw-bold">
+                                      <p className="px-3 mb-0 fw-bold custom-fs-5">
                                         {comment.author.nickname}
                                       </p>
-                                      <p className="px-3 m-0">{comment.text}</p>
+                                      <p className="px-3 m-0 fw-medium">
+                                        {comment.text}
+                                      </p>
                                     </div>
                                   </div>
 

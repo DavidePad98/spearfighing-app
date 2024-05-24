@@ -1,13 +1,45 @@
 import React from "react";
 import "../assets/sass/Footer.scss";
+import { Button } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const Footer = () => {
+  const login = useSelector((state) => state.login.userData);
+  const navigate = useNavigate();
+
+  const handleNavigateLogin = () => {
+    navigate("/login");
+  };
+  const handleNavigateScopri = () => {
+    navigate("/scopri");
+  };
+
   return (
     <footer>
       <section className="d-flex justify-content-between">
         <h1 className="mt-h1-footer text-white rounded-5 w-50 ms-5 p-3">
           Iscriviti per far parte della nostra community di pescatori!
         </h1>
+        {login ? (
+          <div className="d-flex justify-content-center ">
+            <Button
+              className="btn-login fw-bold px-4 py-2 fs-3 bot"
+              onClick={() => handleNavigateScopri()}
+            >
+              Scopri di Più
+            </Button>
+          </div>
+        ) : (
+          <div className="d-flex justify-content-center ">
+            <Button
+              className="btn-login fw-bold px-4 py-2 fs-3 bot"
+              onClick={() => handleNavigateLogin()}
+            >
+              ISCRIVITI
+            </Button>
+          </div>
+        )}
 
         <div className="background ">
           <svg

@@ -123,7 +123,10 @@ const Profile = () => {
       formDataToSubmit.append("email", formData.email);
       formDataToSubmit.append("password", formData.password);
       formDataToSubmit.append("city", formData.city);
-      formDataToSubmit.append("social", formData.social);
+      if (formData.social) {
+        formDataToSubmit.append("social", formData.social);
+      }
+
       if (formData.profileImage) {
         formDataToSubmit.append("profileImage", formData.profileImage);
       }
@@ -307,14 +310,19 @@ const Profile = () => {
             <Card className="profile-card">
               <Card.Img
                 variant="top"
-                src={user.profileImage}
+                src={
+                  user.profileImage == null
+                    ? "https://picsum.photos/id/912/200"
+                    : user.profileImage
+                }
                 className="card-img"
               />
               <Card.Body className="text-center">
                 <Card.Title>{user.nickname}</Card.Title>
-                <Card.Text>
+                <Card.Text className="mb-0">
                   {user.name} {user.surname}
                 </Card.Text>
+                <Card.Text className="custom-fs-5">{user.city}</Card.Text>
 
                 <>
                   <Button
@@ -540,7 +548,11 @@ const Profile = () => {
 
                       <div className="d-flex flex-row align-items-center">
                         <img
-                          src={ticket.user_id.profileImage}
+                          src={
+                            ticket.user_id.profileImage == null
+                              ? "https://picsum.photos/id/912/200"
+                              : ticket.user_id.profileImage
+                          }
                           alt="author"
                           className="profile_img_comm rounded-circle me-2"
                         />
@@ -658,14 +670,22 @@ const Profile = () => {
                             <Card.Img variant="top" src={post.urlContent} />
                           )}
                       <Card.Body>
-                        <Card.Title className="me-2 d-flex  flex-row align-items-center">
+                        <Card.Title className="me-2 d-flex justify-content-between flex-row align-items-center">
                           <Card.Text>{post.text}</Card.Text>
-                          <img
-                            src={post.author.profileImage}
-                            alt="author"
-                            className="profile_img_comm rounded-circle me-2"
-                          />
-                          <p>{post.author.nickname}</p>
+                          <div className="d-flex flex-row align-items-center ms-3">
+                            <img
+                              src={
+                                post.author.profileImage == null
+                                  ? "https://picsum.photos/id/912/200"
+                                  : post.author.profileImage
+                              }
+                              alt="author"
+                              className="profile_img_comm rounded-circle me-2"
+                            />
+                            <p className="custom-fs-5">
+                              {post.author.nickname}
+                            </p>
+                          </div>
                         </Card.Title>
                         <Card.Text className="text-end custom-fs-6">
                           {post.postCreationDate}
@@ -764,7 +784,11 @@ const Profile = () => {
                     <Card.Title>{post.text}</Card.Title>
                     <Card.Text className="d-flex flex-row">
                       <img
-                        src={post.author.profileImage}
+                        src={
+                          post.author.profileImage == null
+                            ? "https://picsum.photos/id/912/200"
+                            : post.author.profileImage
+                        }
                         alt="author"
                         className="img-mini"
                       />
@@ -804,19 +828,35 @@ const Profile = () => {
                     <Card className="w-100">
                       <Card.Body>
                         <Card.Text
-                          className="custom-fs-6 text-primary"
+                          className="custom-fs-6 text-primary d-flex flex-row align-items-center"
                           style={{ cursor: "pointer" }}
                           onClick={() =>
                             handleCommentPostClick(comment.post.id)
                           }
                         >
                           Post: {comment.post.text}
+                          <div className="ms-2 d-flex  flex-row align-items-center ">
+                            <img
+                              src={
+                                comment.post.author.profileImage == null
+                                  ? "https://picsum.photos/id/912/200"
+                                  : comment.post.author.profileImage
+                              }
+                              alt="author"
+                              className="micro-img rounded-circle me-2"
+                            />
+                            {comment.post.author.nickname}
+                          </div>
                         </Card.Text>
                         <Card.Title className="d-flex justify-content-between">
                           <h5>{comment.text}</h5>
                           <div className="custom-fs-5 d-flex flex-row align-items-center ">
                             <img
-                              src={comment.author.profileImage}
+                              src={
+                                comment.author.profileImage == null
+                                  ? "https://picsum.photos/id/912/200"
+                                  : comment.author.profileImage
+                              }
                               alt="author"
                               className="profile_img_comm rounded-circle me-2"
                             />
