@@ -81,7 +81,7 @@ const Ticket = () => {
       }
     };
 
-    handleResize(); // Set initial value
+    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -241,7 +241,7 @@ const Ticket = () => {
     await dispatch(
       uploadComment(commentId, login.authorization, uploadFormData)
     );
-    dispatch(postCommentsAction(postId, login.authorization)); // Refresh the comments
+    dispatch(postCommentsAction(postId, login.authorization));
     setCommentsData((prevState) => ({
       ...prevState,
       [postId]: prevState[postId].map((comment) =>
@@ -457,10 +457,7 @@ const Ticket = () => {
 
                     {visibleComments[post.id] && (
                       <>
-                        <InputGroup
-                          className="mb-3 w-100 pt-2"
-                          // controlId={`formCommentText_${post.id}`}
-                        >
+                        <InputGroup className="mb-3 w-100 pt-2">
                           <Form.Control
                             className="border-0 bg-light"
                             placeholder="Inserisci commento"

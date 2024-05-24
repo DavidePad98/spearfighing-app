@@ -24,15 +24,17 @@ import {
 } from "../redux/action";
 import { useEffect, useState } from "react";
 import "../assets/sass/Profile.scss";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const login = useSelector((state) => state.login.userData);
+  const user = useSelector((state) => state.details.data);
   const tickets = useSelector((state) => state.tickets.tickets);
   const posts = useSelector((state) => state.post.posts);
   const comments = useSelector((state) => state.comment.comments);
   const tickets_post = useSelector((state) => state.postXticket.ticket_posts);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
   const [showTickets, setShowTickets] = useState(false);
@@ -44,14 +46,14 @@ const Profile = () => {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const [formData, setFormData] = useState({
-    nickname: login.user.nickname || "",
-    name: login.user.name || "",
-    surname: login.user.surname || "",
-    email: login.user.email || "",
+    nickname: login?.user?.nickname || "",
+    name: login?.user?.name || "",
+    surname: login?.user?.surname || "",
+    email: login?.user?.email || "",
     password: "",
-    city: login.user.city || "",
-    social: login.user.social || "",
-    profileImage: login.user.profileImage || null,
+    city: login?.user?.city || "",
+    social: login?.user?.social || "",
+    profileImage: login?.user?.profileImage || null,
   });
 
   // eslint-disable-next-line no-unused-vars
@@ -69,10 +71,9 @@ const Profile = () => {
     text: "",
     urlContent: "",
   });
-  const [profileImage, setProfileImage] = useState(null);
 
   useEffect(() => {
-    if (login) {
+    if (login && login.user) {
       dispatch(getUserById(login.user.user_id, login.authorization));
       dispatch(ticketXUser(login.user.user_id, login.authorization));
       dispatch(postXUser(login.user.user_id, login.authorization));
@@ -105,6 +106,13 @@ const Profile = () => {
   };
 
   const handleProfileUpdate = async () => {
+    if (!login || !login.user) return;
+    if (!formData.password) {
+      setPasswordError(
+        "La password è obbligatoria per confermare le modifiche."
+      );
+      return;
+    }
     if (!isFormValid()) return;
     setLoading(true);
     try {
@@ -121,6 +129,7 @@ const Profile = () => {
       }
 
       console.log([...formDataToSubmit.entries()]);
+      console.log("Authorization Token: ", login.authorization);
 
       await dispatch(
         uploadProfile(login.user.user_id, login.authorization, formDataToSubmit)
@@ -130,6 +139,7 @@ const Profile = () => {
     } finally {
       setLoading(false);
       dispatch(getUserById(login.user.user_id, login.authorization));
+      setShow(false);
     }
   };
 
@@ -156,7 +166,6 @@ const Profile = () => {
       formData.surname &&
       formData.email &&
       formData.city
-      // formData.social
     );
   };
 
@@ -235,7 +244,7 @@ const Profile = () => {
       await dispatch(
         uploadTicket(currentTicket.id, login.authorization, ticketPayload)
       );
-      dispatch(ticketXUser(login.user.user_id, login.authorization)); // Aggiorna i ticket dell'utente
+      dispatch(ticketXUser(login.user.user_id, login.authorization));
       handleCloseEditTicketModal();
     } catch (error) {
       console.error("Error updating ticket:", error);
@@ -247,7 +256,7 @@ const Profile = () => {
       await dispatch(
         uploadPost(currentPost.id, login.authorization, uploadFormData)
       );
-      dispatch(postXUser(login.user.user_id, login.authorization)); // Refresh the posts
+      dispatch(postXUser(login.user.user_id, login.authorization));
       setShowPostModal(false);
     }
   };
@@ -257,12 +266,24 @@ const Profile = () => {
       await dispatch(
         uploadComment(currentComment.id, login.authorization, uploadFormData)
       );
-      dispatch(commentXUser(login.user.user_id, login.authorization)); // Refresh the comments
+      dispatch(commentXUser(login.user.user_id, login.authorization));
       setShowCommentModal(false);
     }
   };
 
-  if (!login) {
+  const handleCommentPostClick = (postId) => {
+    navigate(`/details/post/${postId}`);
+  };
+
+  const handlePostClick = (postId) => {
+    navigate(`/details/post/${postId}`);
+  };
+
+  const handleTicketClick = (ticketId) => {
+    navigate(`/details/ticket/${ticketId}`);
+  };
+
+  if (!login || !login.user) {
     return (
       <div className="bk vh-100 d-flex justify-content-center align-items-center flex-column">
         <div className="text-center bk-glass p-5 text-dark g">
@@ -286,13 +307,13 @@ const Profile = () => {
             <Card className="profile-card">
               <Card.Img
                 variant="top"
-                src={login.user.profileImage}
+                src={user.profileImage}
                 className="card-img"
               />
               <Card.Body className="text-center">
-                <Card.Title>{login.user.nickname}</Card.Title>
+                <Card.Title>{user.nickname}</Card.Title>
                 <Card.Text>
-                  {login.user.name} {login.user.surname}
+                  {user.name} {user.surname}
                 </Card.Text>
 
                 <>
@@ -351,6 +372,31 @@ const Profile = () => {
                           )}
                         </Button>
                       </p>
+                    </div>
+                    <div>
+                      <h1
+                        className="text-uppercase
+                      "
+                      >
+                        i miei social:
+                      </h1>
+                      <div className="d-flex flex-row justify-content-center mt-3">
+                        <p className="mb-0">
+                          <Button className="border-0 bot">
+                            <i className="bi bi-youtube fs-3"></i>
+                          </Button>
+                        </p>
+                        <p className="mx-3 mb-0">
+                          <Button className="border-0 bot">
+                            <i className="bi bi-facebook fs-3"></i>
+                          </Button>
+                        </p>
+                        <p className="mb-0">
+                          <Button className="border-0 bot">
+                            <i className="bi bi-instagram fs-3"></i>
+                          </Button>
+                        </p>
+                      </div>
                     </div>
                   </div>
 
@@ -505,7 +551,7 @@ const Profile = () => {
                       {ticket.ticketCreationDate}
                     </Card.Text>
                     <Card.Text className="text-end"></Card.Text>
-                    <div className="d-flex justify-content-between ">
+                    <div className="d-flex justify-content-between mt-2">
                       <Button
                         className="bg-transparent border-0 text-secondary custom-fs-5"
                         onClick={() => handleShowPostsTicket(ticket.id)}
@@ -515,16 +561,22 @@ const Profile = () => {
                       </Button>
                       <div>
                         <Button
-                          className="border-0 me-2 rounded-5 trash"
+                          className="border-0 rounded-5 trash"
                           onClick={() => handleDeleteTicket(ticket.id)}
                         >
                           <i className="bi bi-trash3-fill"></i>
                         </Button>
                         <Button
-                          className="border-0 rounded-5"
+                          className="border-0 mx-2 rounded-5 bot bg-transparent bot-chat"
                           onClick={() => handleShowEditTicketModal(ticket)}
                         >
-                          <i className="bi bi-pencil"></i>
+                          <i className="bi bi-pencil text-info i-info"></i>
+                        </Button>
+                        <Button
+                          className="border-0 rounded-5 text-primary bg-transparent pr-hover"
+                          onClick={() => handleTicketClick(ticket.id)}
+                        >
+                          <i className="bi bi-box-arrow-up-right"></i>
                         </Button>
                       </div>
                     </div>
@@ -541,6 +593,7 @@ const Profile = () => {
         </Modal>
 
         {/* MODALE EDIT TICKET */}
+
         <Modal
           show={showEditTicketModal}
           onHide={handleCloseEditTicketModal}
@@ -588,7 +641,11 @@ const Profile = () => {
                     key={post.id}
                     className="d-flex justify-content-center align-items-center"
                   >
-                    <Card className="my-2 w-100">
+                    <Card
+                      className="my-2 w-100"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handlePostClick(post.id)}
+                    >
                       {post.filePaths && post.filePaths.length > 0
                         ? post.filePaths.map((filePath, index) => (
                             <Card.Img
@@ -601,33 +658,32 @@ const Profile = () => {
                             <Card.Img variant="top" src={post.urlContent} />
                           )}
                       <Card.Body>
-                        <div className="d-flex flex-row ">
-                          <Card.Title className="me-2">
-                            <img
-                              src={post.author.profileImage}
-                              alt="author"
-                              className="profile_img_comm rounded-circle me-2"
-                            />
-                            {post.author.nickname}
-                          </Card.Title>
+                        <Card.Title className="me-2 d-flex  flex-row align-items-center">
                           <Card.Text>{post.text}</Card.Text>
-                        </div>
-
+                          <img
+                            src={post.author.profileImage}
+                            alt="author"
+                            className="profile_img_comm rounded-circle me-2"
+                          />
+                          <p>{post.author.nickname}</p>
+                        </Card.Title>
                         <Card.Text className="text-end custom-fs-6">
                           {post.postCreationDate}
                         </Card.Text>
-                        <Button
-                          className="border-0 rounded-5 trash me-2"
-                          onClick={() => handleDeletePost(post.id)}
-                        >
-                          <i className="bi bi-trash3-fill"></i>
-                        </Button>
-                        <Button
-                          className="border-0 rounded-5"
-                          onClick={() => handleShowPostModal(post)}
-                        >
-                          <i className="bi bi-pencil"></i>
-                        </Button>
+                        <Card.Text className="text-end">
+                          <Button
+                            className="border-0 rounded-5 trash me-2"
+                            onClick={() => handleDeletePost(post.id)}
+                          >
+                            <i className="bi bi-trash3-fill"></i>
+                          </Button>
+                          <Button
+                            className="border-0 rounded-5 bot bg-transparent bot-chat"
+                            onClick={() => handleShowPostModal(post)}
+                          >
+                            <i className="bi bi-pencil text-info i-info"></i>
+                          </Button>
+                        </Card.Text>
                       </Card.Body>
                     </Card>
                   </Col>
@@ -693,17 +749,32 @@ const Profile = () => {
                 key={post.id}
                 className="d-flex justify-content-center align-items-center"
               >
-                <Card className="card-post mb-3" key={post.id}>
+                <Card
+                  className="card-post mb-3"
+                  key={post.id}
+                  style={{ cursor: "pointer" }}
+                  onClick={() => navigate(`/post/${post.id}`)}
+                >
                   {post.urlContent === "" ? (
                     ""
                   ) : (
                     <Card.Img variant="top" src={post.urlContent} />
                   )}
-                  {/* <Card.Img variant="top" src={post.urlContent} /> */}
                   <Card.Body>
                     <Card.Title>{post.text}</Card.Title>
-
-                    <Card.Text>{post.postCreationDate}</Card.Text>
+                    <Card.Text className="d-flex flex-row">
+                      <img
+                        src={post.author.profileImage}
+                        alt="author"
+                        className="img-mini"
+                      />
+                      <p className="ms-2 custom-fs-5 fw-bold">
+                        {post.author.nickname}
+                      </p>
+                    </Card.Text>
+                    <Card.Text className="text-end custom-fs-6">
+                      {post.postCreationDate}
+                    </Card.Text>
                   </Card.Body>
                 </Card>
               </Col>
@@ -717,6 +788,7 @@ const Profile = () => {
         </Modal>
 
         {/* {MODALE COMMENTI} */}
+
         <Modal show={showComments} onHide={handleToggleComments}>
           <Modal.Header closeButton>
             <Modal.Title>Commenti</Modal.Title>
@@ -731,12 +803,18 @@ const Profile = () => {
                   >
                     <Card className="w-100">
                       <Card.Body>
-                        <Card.Text className="custom-fs-6">
+                        <Card.Text
+                          className="custom-fs-6 text-primary"
+                          style={{ cursor: "pointer" }}
+                          onClick={() =>
+                            handleCommentPostClick(comment.post.id)
+                          }
+                        >
                           Post: {comment.post.text}
                         </Card.Text>
                         <Card.Title className="d-flex justify-content-between">
-                          {comment.text}
-                          <div className="custom-fs-5">
+                          <h5>{comment.text}</h5>
+                          <div className="custom-fs-5 d-flex flex-row align-items-center ">
                             <img
                               src={comment.author.profileImage}
                               alt="author"
@@ -745,19 +823,20 @@ const Profile = () => {
                             {comment.author.nickname}
                           </div>
                         </Card.Title>
-                        <Card.Text></Card.Text>
-                        <Button
-                          className="border-0 rounded-5 trash me-2"
-                          onClick={() => handleDeleteComment(comment.id)}
-                        >
-                          <i className="bi bi-trash3-fill"></i>
-                        </Button>
-                        <Button
-                          className="border-0 rounded-5"
-                          onClick={() => handleShowCommentModal(comment)}
-                        >
-                          <i className="bi bi-pencil"></i>
-                        </Button>
+                        <Card.Text className="text-end">
+                          <Button
+                            className="border-0 rounded-5 trash me-2"
+                            onClick={() => handleDeleteComment(comment.id)}
+                          >
+                            <i className="bi bi-trash3-fill"></i>
+                          </Button>
+                          <Button
+                            className="border-0 rounded-5 bot bg-transparent bot-chat"
+                            onClick={() => handleShowCommentModal(comment)}
+                          >
+                            <i className="bi bi-pencil text-info i-info"></i>
+                          </Button>
+                        </Card.Text>
                       </Card.Body>
                     </Card>
                   </Col>

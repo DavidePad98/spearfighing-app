@@ -24,9 +24,6 @@ const NavBar = () => {
   const user = useSelector(
     (state) => state.login.userData && state.login.userData.user
   );
-  // const profileImage = useSelector(
-  //   (state) => state.user.userData?.profileImage
-  // );
   const login = useSelector((state) => state.login.userData);
   const users = useSelector((state) => state.search.users);
   const posts = useSelector((state) => state.search.posts);
@@ -52,7 +49,6 @@ const NavBar = () => {
     setIsMenuOpen(false);
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedSearch = useCallback(
     debounce((query) => {
       if (query && login && login.authorization) {
@@ -140,10 +136,8 @@ const NavBar = () => {
                     className="white-nav_links"
                     onClick={handleLinkClick}
                   >
-                    Di Più
+                    Scopri di Più
                   </Nav.Link>
-                  {/* --------------------------------- */}
-
                   <Form
                     onSubmit={(e) => e.preventDefault()}
                     className="text-center"
@@ -248,8 +242,6 @@ const NavBar = () => {
                       </div>
                     )}
                   </Form>
-
-                  {/* --------------------------------- */}
                 </>
               ) : (
                 <>
@@ -277,20 +269,12 @@ const NavBar = () => {
                   >
                     Discussioni
                   </Nav.Link>
-                  {/* <Nav.Link
-                    as={Link}
-                    to={"search"}
-                    className="white-nav_links"
-                    onClick={handleLinkClick}
-                  >
-                    Cerca
-                  </Nav.Link> */}
                   <Nav.Link
                     href="#pricing"
                     className="white-nav_links"
                     onClick={handleLinkClick}
                   >
-                    Di Più
+                    Scopri di Più
                   </Nav.Link>
                 </>
               )}

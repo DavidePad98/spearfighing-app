@@ -9,23 +9,9 @@ import NavBar from "./components/NavBar";
 import Home from "./components/Home";
 import Footer from "./components/Footer";
 import Ticket from "./components/Ticket";
-// import Search from "./components/Search";
 import DetailPage from "./components/DetailPage";
-// import { useDispatch } from "react-redux";
-// import { useEffect } from "react";
-// import { validateTokenAndFetchUser } from "./redux/action";
 
 function App() {
-  // const dispatch = useDispatch();
-
-  // useEffect(() => {
-  //   const token = localStorage.getItem("token");
-  //   console.log("Token from storage:", token);
-  //   if (token) {
-  //     validateTokenAndFetchUser(token, dispatch);
-  //   }
-  // }, [dispatch]);
-
   return (
     <BrowserRouter>
       <NavBar />
@@ -64,17 +50,7 @@ function App() {
             </>
           }
         />
-        {/* <Route
-          path="/search"
-          element={
-            <>
-              <Search />
-            </>
-          }
-        /> */}
-
         <Route path="/details/:type/:id" element={<DetailPage />} />
-        {/* altre rotte */}
       </Routes>
     </BrowserRouter>
   );

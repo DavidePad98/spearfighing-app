@@ -154,6 +154,7 @@ const DetailPage = () => {
         ...prevState,
         [postId]: { text: "" },
       }));
+      dispatch(getPostById(postId, login.authorization));
       dispatch(postCommentsAction(postId, login.authorization));
     });
   };
@@ -165,22 +166,28 @@ const DetailPage = () => {
     }));
   };
 
-  const handleDeleteComment = async (commentId) => {
+  const handleDeleteComment = async (commentId, postId) => {
     await dispatch(deleteComment(commentId, login.authorization));
-    dispatch(getCommentById(commentId, login.authorization));
+    dispatch(getPostById(postId, login.authorization));
+    dispatch(postCommentsAction(postId, login.authorization));
   };
 
   const handleShowCommentModal = (comment) => {
+    if (!comment || !comment.text) {
+      console.error("Invalid comment");
+      return;
+    }
     setCurrentComment(comment);
     setUploadFormData({ text: comment.text });
     setShowCommentModal(true);
   };
 
-  const handleUpdateComment = async (commentId) => {
+  const handleUpdateComment = async (commentId, postId) => {
     await dispatch(
       uploadComment(commentId, login.authorization, uploadFormData)
     );
-    dispatch(getCommentById(commentId, login.authorization)); // Refresh the comments
+    dispatch(getPostById(postId, login.authorization));
+    dispatch(postCommentsAction(postId, login.authorization));
     setShowCommentModal(false);
   };
 
@@ -332,8 +339,8 @@ const DetailPage = () => {
           <>
             <h1 className="text-white text-center mb-3 case">POSTS</h1>
             <Row className="justify-content-center align-items-center flex-column ">
-              <Col sm={4}>
-                <Card className="bk-glass">
+              <Col sm={4} className="pb-5">
+                <Card className="bk-glass pb-3">
                   <Card.Img variant="top" src={details.urlContent} />
                   <Card.Body className="py-0 mt-2 px-3">
                     <Button
@@ -360,7 +367,7 @@ const DetailPage = () => {
                       </div>
 
                       {details.author.id === login.user.user_id && (
-                        <div className="me-3 ">
+                        <div className="me-3 d-flex flec-row">
                           <Button
                             className="border-0 rounded-5 trash me-2 bot"
                             onClick={() => handleDeletePost(details.id)}
@@ -379,10 +386,7 @@ const DetailPage = () => {
 
                     {visibleComments[details.id] && (
                       <>
-                        <InputGroup
-                          className="mb-3 w-100 pt-2"
-                          // controlId={`formCommentText_${details.id}`}
-                        >
+                        <InputGroup className="mb-3 w-100 pt-2">
                           <Form.Control
                             className="border-0 bg-light"
                             placeholder="Inserisci commento"
@@ -488,7 +492,9 @@ const DetailPage = () => {
                       </p>
                     </div>
                   </Card.Title>
-                  <Card.Text>{details.ticketCreationDate}</Card.Text>
+                  <Card.Text className="text-end custom-fs-6">
+                    {details.ticketCreationDate}
+                  </Card.Text>
                 </Card.Body>
               </Card>
               {details.posts &&
@@ -539,10 +545,7 @@ const DetailPage = () => {
                         </Card.Title>
                         {visibleComments[post.id] && (
                           <>
-                            <InputGroup
-                              className="mb-3 w-100 pt-2"
-                              // controlId={`formCommentText_${post.id}`}
-                            >
+                            <InputGroup className="mb-3 w-100 pt-2">
                               <Form.Control
                                 className="border-0 bg-light"
                                 placeholder="Inserisci commento"
@@ -672,16 +675,6 @@ const DetailPage = () => {
                     </Card.Text>
                     {details.author.id === login.user.user_id && (
                       <div className="text-end">
-                        {/* <Button
-                          className="border-0 rounded-5 trash me-2 bot"
-                          onClick={() =>
-                            handleDeleteComment(details.id, details.post.id)
-                          }
-                          as={Link}
-                          to={"/"}
-                        >
-                          <i className="bi bi-trash3-fill"></i>
-                        </Button> */}
                         <Button
                           className="border-0 rounded-5 bot bg-transparent bot-chat"
                           onClick={() => handleShowCommentModal(details)}
@@ -805,9 +798,6 @@ const DetailPage = () => {
                       <p className="m-0">{ticket.user_id.nickname}</p>
                     </div>
                   </Card.Title>
-                  {/* <Card.Subtitle className="mb-2 text-muted">
-                        Card Subtitle
-                      </Card.Subtitle> */}
                   <Card.Text className="text-end custom-fs-6">
                     {ticket.ticketCreationDate}
                   </Card.Text>
@@ -1000,9 +990,18 @@ const DetailPage = () => {
           </Button>
           <Button
             variant="primary"
-            onClick={() =>
-              handleUpdateComment(currentComment.id, currentComment.post.id)
-            }
+            onClick={() => {
+              if (
+                currentComment &&
+                currentComment.id &&
+                currentComment.post &&
+                currentComment.post.id
+              ) {
+                handleUpdateComment(currentComment.id, currentComment.post.id);
+              } else {
+                console.error("Invalid currentComment data");
+              }
+            }}
           >
             Save Changes
           </Button>

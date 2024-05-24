@@ -2,7 +2,6 @@ html {
   overflow-y: scroll;
   height: 100%;
   -webkit-overflow-scrolling: touch;
-  // overflow-scrolling: touch;
 }
 
 .home-section {
@@ -31,9 +30,6 @@ section h1 {
   font-size: 3.5em;
   font-weight: bold;
   text-transform: uppercase;
-  /* background-color: rgba(255, 255, 255, 0.3);
-  -webkit-box-shadow: 0px 0px 21px 5px #ffffff00;
-  box-shadow: 0px 0px 21px 5px #ffffffa5; */
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
   background-color: rgba(255, 255, 255, 0.25);

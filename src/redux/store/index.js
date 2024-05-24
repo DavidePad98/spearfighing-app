@@ -1,10 +1,7 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
-// import usersReducer from "../reducers/users";
 import userLoginReducer from "../reducers/login";
 import userRegistrationReducer from "../reducers/registrationuser";
 import ticketReducer from "../reducers/ticket";
-// import profileImageReducer from "../reducers/profileImageMod";
-// import getUserByIdReducer from "../reducers/user";
 import postReducer from "../reducers/post";
 import commentReducer from "../reducers/comment";
 import allTicketReducer from "../reducers/allTickets";
@@ -27,7 +24,6 @@ const mainReducer = combineReducers({
   registration: userRegistrationReducer,
   details: detailsReducer,
   tickets: ticketReducer,
-  // user: getUserByIdReducer,
   post: postReducer,
   comment: commentReducer,
   allTickets: allTicketReducer,

@@ -59,7 +59,6 @@ const LoginPage = () => {
     console.log(registrationData);
 
     if (response && response.success) {
-      // Se la registrazione ha avuto successo, effettua il login con le stesse credenziali
       const loginResponse = await dispatch(
         loginUser({
           nicknameOrEmail: registrationData.nickname,
@@ -79,7 +78,6 @@ const LoginPage = () => {
 
   const toggleForm = () => {
     setIsRegistration(!isRegistration);
-    // Pulisci i dati dei form quando si cambia tra login e registrazione
     setFormData({
       nicknameOrEmail: "",
       password: "",
@@ -112,7 +110,7 @@ const LoginPage = () => {
                   type="text"
                   name="nickname"
                   value={registrationData.nickname}
-                  onChange={handleChange} // Assicurati che handleChange sia correttamente configurato
+                  onChange={handleChange}
                   placeholder="Enter nickname"
                 />
               </Form.Group>
@@ -123,7 +121,7 @@ const LoginPage = () => {
                   type="text"
                   name="name"
                   value={registrationData.name}
-                  onChange={handleChange} // Assicurati che handleChange sia correttamente configurato
+                  onChange={handleChange}
                   placeholder="es. Mario"
                 />
               </Form.Group>
@@ -134,7 +132,7 @@ const LoginPage = () => {
                   type="text"
                   name="surname"
                   value={registrationData.surname}
-                  onChange={handleChange} // Assicurati che handleChange sia correttamente configurato
+                  onChange={handleChange}
                   placeholder="es.Rossi"
                 />
               </Form.Group>
@@ -145,7 +143,7 @@ const LoginPage = () => {
                   type="email"
                   name="email"
                   value={registrationData.email}
-                  onChange={handleChange} // Assicurati che handleChange sia correttamente configurato
+                  onChange={handleChange}
                   placeholder="mario.rossi@email.com"
                 />
               </Form.Group>
@@ -156,7 +154,7 @@ const LoginPage = () => {
                   type="password"
                   name="password"
                   value={registrationData.password}
-                  onChange={handleChange} // Assicurati che handleChange sia correttamente configurato
+                  onChange={handleChange}
                   placeholder="password"
                 />
               </Form.Group>
@@ -167,7 +165,7 @@ const LoginPage = () => {
                   type="text"
                   name="city"
                   value={registrationData.city}
-                  onChange={handleChange} // Assicurati che handleChange sia correttamente configurato
+                  onChange={handleChange}
                   placeholder="NewYork"
                 />
               </Form.Group>
@@ -220,9 +218,6 @@ const LoginPage = () => {
                 onClick={toggleForm}
                 className="bg-transparent border-0 bot mt-1"
               >
-                {/* <p className="i_finger m-0">
-                  <i className="bi bi-hand-index m-0"></i>
-                </p> */}
                 or Create an Account
               </Button>
             </Form>
