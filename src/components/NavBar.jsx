@@ -26,7 +26,7 @@ const NavBar = () => {
   //   (state) => state.login.userData && state.login.userData.user
   // );
   const login = useSelector((state) => state.login.userData);
-  const details = useSelector((state) => state.details.data);
+  // const details = useSelector((state) => state.details.data);
   const users = useSelector((state) => state.search.users);
   const posts = useSelector((state) => state.search.posts);
   const tickets = useSelector((state) => state.search.tickets);
@@ -45,7 +45,7 @@ const NavBar = () => {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    { login, dispatch }
+    [login, dispatch]
   );
 
   const handleLogout = () => {
@@ -61,6 +61,7 @@ const NavBar = () => {
     setIsMenuOpen(false);
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedSearch = useCallback(
     debounce((query) => {
       if (query && login && login.authorization) {

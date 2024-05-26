@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React from "react";
 import "../assets/sass/Footer.scss";
 import { Button } from "react-bootstrap";

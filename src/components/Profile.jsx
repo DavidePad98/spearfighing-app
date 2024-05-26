@@ -292,9 +292,10 @@ const Profile = () => {
         <div className="text-center bk-glass p-5 text-dark g">
           <p>Ci dispiace!</p>
           <p>
-            Per accedere alla sezione Profilo hai bisogno di effettuare il Login
+            Per accedere alla sezione discussioni hai bisogno di effettuare il
+            Login
           </p>
-          <Button as={Link} to="/login">
+          <Button as={Link} to="/login" className="fw-bold mt-2">
             Login
           </Button>
         </div>

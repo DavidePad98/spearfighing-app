@@ -79,6 +79,15 @@ export const GET_POST_BY_ID_FAILURE = "GET_POST_BY_ID_FAILURE";
 export const GET_TICKET_BY_ID_REQUEST = "GET_TICKET_BY_ID_REQUEST";
 export const GET_TICKET_BY_ID_SUCCESS = "GET_TICKET_BY_ID_SUCCESS";
 export const GET_TICKET_BY_ID_FAILURE = "GET_TICKET_BY_ID_FAILURE";
+export const FETCH_LIKES_REQUEST = "FETCH_LIKES_REQUEST";
+export const FETCH_LIKES_SUCCESS = "FETCH_LIKES_SUCCESS";
+export const FETCH_LIKES_FAILURE = "FETCH_LIKES_FAILURE";
+export const ADD_LIKE_REQUEST = "ADD_LIKE_REQUEST";
+export const ADD_LIKE_SUCCESS = "ADD_LIKE_SUCCESS";
+export const ADD_LIKE_FAILURE = "ADD_LIKE_FAILURE";
+export const REMOVE_LIKE_REQUEST = "REMOVE_LIKE_REQUEST";
+export const REMOVE_LIKE_SUCCESS = "REMOVE_LIKE_SUCCESS";
+export const REMOVE_LIKE_FAILURE = "REMOVE_LIKE_FAILURE";
 
 // VALIDATE TOKEN
 
@@ -1187,6 +1196,204 @@ export const searchUser = (token, query) => {
       dispatch(searchUserSuccess(userData));
     } catch (error) {
       dispatch(searchUserFailure(error.message));
+    }
+  };
+};
+
+// GET LIKES
+
+export const fetchLikesRequest = () => ({
+  type: FETCH_LIKES_REQUEST,
+});
+
+export const fetchLikesSuccess = (likeData) => ({
+  type: FETCH_LIKES_SUCCESS,
+  payload: likeData || [],
+});
+
+export const fetchLikesFailure = (error) => ({
+  type: FETCH_LIKES_FAILURE,
+  payload: error || "Unknown error",
+});
+
+export const fetchLikesForPost = (token, postId) => {
+  return async (dispatch) => {
+    dispatch(fetchLikesRequest());
+    try {
+      const response = await fetch(
+        `http://localhost:3001/likes/post/${postId}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
+      }
+      const likeData = await response.json();
+      dispatch(fetchLikesSuccess(likeData));
+    } catch (error) {
+      dispatch(fetchLikesFailure(error.message));
+    }
+  };
+};
+
+export const fetchLikesForTicket = (token, ticketId) => {
+  return async (dispatch) => {
+    dispatch(fetchLikesRequest());
+    try {
+      const response = await fetch(
+        `http://localhost:3001/likes/ticket/${ticketId}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
+      }
+      const likeData = await response.json();
+      dispatch(fetchLikesSuccess(likeData));
+    } catch (error) {
+      dispatch(fetchLikesFailure(error.message));
+    }
+  };
+};
+
+export const fetchLikesForComment = (token, commentId) => {
+  return async (dispatch) => {
+    dispatch(fetchLikesRequest());
+    try {
+      const response = await fetch(
+        `http://localhost:3001/likes/comment/${commentId}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
+      }
+      const likeData = await response.json();
+      dispatch(fetchLikesSuccess(likeData));
+    } catch (error) {
+      dispatch(fetchLikesFailure(error.message));
+    }
+  };
+};
+
+export const fetchLikesForUser = (token, userId) => {
+  return async (dispatch) => {
+    dispatch(fetchLikesRequest());
+    try {
+      const response = await fetch(
+        `http://localhost:3001/likes/user/${userId}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
+      }
+      const likeData = await response.json();
+      dispatch(fetchLikesSuccess(likeData));
+    } catch (error) {
+      dispatch(fetchLikesFailure(error.message));
+    }
+  };
+};
+
+// POST LIKES
+
+export const addLikeRequest = () => ({
+  type: ADD_LIKE_REQUEST,
+});
+
+export const addLikeSuccess = (likeData) => ({
+  type: ADD_LIKE_SUCCESS,
+  payload: likeData,
+});
+
+export const addLikeFailure = (error) => ({
+  type: ADD_LIKE_FAILURE,
+  payload: error,
+});
+
+export const addLike = (token, entityId, entityType, userId) => {
+  return async (dispatch) => {
+    dispatch(addLikeRequest());
+    try {
+      const response = await fetch(
+        `http://localhost:3001/likes/${entityType}/${entityId}?userId=${userId}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId }),
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
+      }
+      const likeData = await response.json();
+      dispatch(addLikeSuccess(likeData));
+    } catch (error) {
+      dispatch(addLikeFailure(error.message));
+    }
+  };
+};
+
+// REMOVE LIKES
+
+export const removeLikeRequest = () => ({
+  type: REMOVE_LIKE_REQUEST,
+});
+
+export const removeLikeSuccess = (likeId) => ({
+  type: REMOVE_LIKE_SUCCESS,
+  payload: likeId,
+});
+
+export const removeLikeFailure = (error) => ({
+  type: REMOVE_LIKE_FAILURE,
+  payload: error,
+});
+
+export const removeLike = (token, entityId, entityType, userId) => {
+  return async (dispatch) => {
+    dispatch(removeLikeRequest());
+    try {
+      const response = await fetch(
+        `http://localhost:3001/likes/${entityType}/${entityId}?userId=${userId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
+      }
+      dispatch(removeLikeSuccess(userId));
+    } catch (error) {
+      dispatch(removeLikeFailure(error.message));
     }
   };
 };

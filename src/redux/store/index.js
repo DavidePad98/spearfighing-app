@@ -18,6 +18,7 @@ import ticketModReducer from "../reducers/modTicket";
 import postModReducer from "../reducers/modPost";
 import searchReducer from "../reducers/search";
 import detailsReducer from "../reducers/detailsPage";
+import likeReducer from "../reducers/likes";
 
 const mainReducer = combineReducers({
   login: userLoginReducer,
@@ -39,6 +40,7 @@ const mainReducer = combineReducers({
   modTicket: ticketModReducer,
   modPost: postModReducer,
   search: searchReducer,
+  likes: likeReducer,
 });
 const store = configureStore({
   reducer: mainReducer,

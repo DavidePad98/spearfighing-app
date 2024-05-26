@@ -18,6 +18,7 @@ import {
   createTicketAction,
   deleteComment,
   deletePost,
+  fetchLikesForTicket,
   postCommentsAction,
   postsByTicketAction,
   uploadComment,
@@ -32,6 +33,7 @@ const Ticket = () => {
   const posts = useSelector((state) => state.postXticket.ticket_posts);
   const loading = useSelector((state) => state.postXticket.loading);
   const allComments = useSelector((state) => state.commentXpost.post_comments);
+  const likes = useSelector((state) => state.likes.likes);
   const dispatch = useDispatch();
 
   const [selectedTicketId, setSelectedTicketId] = useState(null);
@@ -57,7 +59,7 @@ const Ticket = () => {
   const [clickedPostId, setClickedPostId] = useState(null);
 
   useEffect(() => {
-    if (login) {
+    if (login && login.user) {
       dispatch(allTicketAction(login.authorization));
     }
   }, [dispatch, login]);
@@ -87,7 +89,7 @@ const Ticket = () => {
   }, []);
 
   useEffect(() => {
-    if (login && selectedTicketId) {
+    if (login && login.user && selectedTicketId) {
       dispatch(postsByTicketAction(selectedTicketId, login.authorization));
     }
   }, [selectedTicketId, dispatch, login]);
@@ -267,7 +269,7 @@ const Ticket = () => {
             Per accedere alla sezione discussioni hai bisogno di effettuare il
             Login
           </p>
-          <Button as={Link} to="/login">
+          <Button as={Link} to="/login" className="fw-bold mt-2">
             Login
           </Button>
         </div>
@@ -359,9 +361,16 @@ const Ticket = () => {
                           className="profile_img_comm rounded-circle"
                         />
                       </Col>
-                      <p className="p-ticket-date text-end m-0">
+                      <div className="p-ticket-date d-flex flex-row justify-content-between align-items-center m-0">
+                        <p className="custom-fs-5">
+                          Vota:
+                          <Button className="star bg-transparent rounded-cicle border-0 ms-2 bot position-relative">
+                            <i className="bi bi-star text-warning"></i>
+                          </Button>
+                        </p>
+
                         {ticket.ticketCreationDate}
-                      </p>
+                      </div>
                     </Row>
                   </Col>
                 ))}
@@ -424,10 +433,13 @@ const Ticket = () => {
                 <Card className="bk-glass w-50">
                   <Card.Img variant="top" src={post.urlContent} />
                   <Card.Body className="py-0 mt-2 px-3 pb-4">
-                    <div className="d-flex justify-content-between align-items-center">
+                    <div>
                       <div>
+                        <Button className="heart bg-transparent border-0 ms-2 bot ">
+                          <i className="bi bi-heart text-danger"></i>
+                        </Button>
                         <Button
-                          className="bg-transparent border-0 rounded-5 bot mb-2 bot-chat"
+                          className="bg-transparent border-0 rounded-5 bot mb-2 bot-chat ms-2"
                           onClick={() => handleCommentClick(post.id)}
                         >
                           {clickedPostId === post.id ? (
@@ -437,40 +449,45 @@ const Ticket = () => {
                           )}
                         </Button>
                       </div>
-                      <div>
-                        {post.author.id === login.user.user_id && (
-                          <div className="me-3 d-flex flex-row align-items-center">
-                            <Button
-                              className="border-0 rounded-5 trash me-2 bot"
-                              onClick={() => handleDeletePost(post.id)}
-                            >
-                              <i className="bi bi-trash3-fill"></i>
-                            </Button>
-                            <Button
-                              className="border-0 rounded-5 bot bg-transparent bot-chat"
-                              onClick={() => handleShowPostModal(post)}
-                            >
-                              <i className="bi bi-pencil-fill text-info i-info"></i>
-                            </Button>
-                          </div>
-                        )}
+                      <div className="d-flex felx-row justify-content-between">
+                        <div className="d-flex flex-row align-items-center">
+                          <img
+                            src={
+                              post.author.profileImage == null
+                                ? "https://picsum.photos/id/912/200"
+                                : post.author.profileImage
+                            }
+                            alt="author"
+                            className="profile_img_comm rounded-circle"
+                          />
+                          <p className="pe-3 fw-bold m-0 ms-2 custom-fs-5 p-custom">
+                            {post.author.nickname}
+                          </p>
+                        </div>
+
+                        <div>
+                          {post.author.id === login.user.user_id && (
+                            <div className="me-3 d-flex flex-row align-items-center">
+                              <Button
+                                className="border-0 rounded-5 trash me-2 bot"
+                                onClick={() => handleDeletePost(post.id)}
+                              >
+                                <i className="bi bi-trash3-fill"></i>
+                              </Button>
+                              <Button
+                                className="border-0 rounded-5 bot bg-transparent bot-chat"
+                                onClick={() => handleShowPostModal(post)}
+                              >
+                                <i className="bi bi-pencil-fill text-info i-info"></i>
+                              </Button>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
 
                     <Card.Title className="d-flex flex-row justify-content-between ">
                       <div className="d-flex flex-row justify-content-between align-items-center">
-                        <img
-                          src={
-                            post.author.profileImage == null
-                              ? "https://picsum.photos/id/912/200"
-                              : post.author.profileImage
-                          }
-                          alt="author"
-                          className="profile_img_comm rounded-circle"
-                        />
-                        <p className="pe-3 fw-bold m-0 ms-2 custom-fs-5 p-custom">
-                          {post.author.nickname}
-                        </p>
                         <p className="m-0">{post.text}</p>
                       </div>
                     </Card.Title>
@@ -501,7 +518,7 @@ const Ticket = () => {
                         {commentsData[post.id] &&
                           commentsData[post.id].length > 0 && (
                             <>
-                              {commentsData[post.id].map((comment, j) => (
+                              {commentsData[post.id].map((comment) => (
                                 <div
                                   key={comment.id}
                                   className="d-flex justify-content-between align-items-center pb-2"
@@ -527,30 +544,36 @@ const Ticket = () => {
                                       </p>
                                     </div>
                                   </div>
+                                  <div className="d-flex flex-row align-items-center">
+                                    <Button className="heart bg-transparent border-0 ms-2 bot position-relative">
+                                      <i className="bi bi-heart text-danger"></i>
+                                    </Button>
 
-                                  {comment.author.id === login.user.user_id && (
-                                    <div className="me-3">
-                                      <Button
-                                        className="border-0 rounded-5 trash me-2 bot"
-                                        onClick={() =>
-                                          handleDeleteComment(
-                                            comment.id,
-                                            post.id
-                                          )
-                                        }
-                                      >
-                                        <i className="bi bi-trash3-fill"></i>
-                                      </Button>
-                                      <Button
-                                        className="border-0 rounded-5 bot bg-transparent bot-chat"
-                                        onClick={() =>
-                                          handleShowCommentModal(comment)
-                                        }
-                                      >
-                                        <i className="bi bi-pencil-fill text-info i-info"></i>
-                                      </Button>
-                                    </div>
-                                  )}
+                                    {comment.author.id ===
+                                      login.user.user_id && (
+                                      <div className="me-3 d-flex flex-row">
+                                        <Button
+                                          className="border-0 rounded-5 trash mx-2 bot"
+                                          onClick={() =>
+                                            handleDeleteComment(
+                                              comment.id,
+                                              post.id
+                                            )
+                                          }
+                                        >
+                                          <i className="bi bi-trash3-fill"></i>
+                                        </Button>
+                                        <Button
+                                          className="border-0 rounded-5 bot bg-transparent bot-chat"
+                                          onClick={() =>
+                                            handleShowCommentModal(comment)
+                                          }
+                                        >
+                                          <i className="bi bi-pencil-fill text-info i-info"></i>
+                                        </Button>
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
                               ))}
                             </>
