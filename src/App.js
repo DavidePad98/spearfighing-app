@@ -10,6 +10,7 @@ import Home from "./components/Home";
 import Footer from "./components/Footer";
 import Ticket from "./components/Ticket";
 import DetailPage from "./components/DetailPage";
+import Scopri from "./components/Scopri";
 
 function App() {
   return (
@@ -51,6 +52,15 @@ function App() {
           }
         />
         <Route path="/details/:type/:id" element={<DetailPage />} />
+        <Route
+          path="/scopri"
+          element={
+            <>
+              <Scopri />
+              <Footer />
+            </>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

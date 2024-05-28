@@ -12,15 +12,17 @@ import {
 } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  addLike,
   allTicketAction,
   createCommentAction,
   createPostAction,
   createTicketAction,
   deleteComment,
   deletePost,
-  fetchLikesForTicket,
+  fetchLikesForEntity,
   postCommentsAction,
   postsByTicketAction,
+  removeLike,
   uploadComment,
   uploadPost,
 } from "../redux/action";
@@ -28,12 +30,13 @@ import "../assets/sass/Ticket.scss";
 import { Link } from "react-router-dom";
 
 const Ticket = () => {
-  const tickets = useSelector((state) => state.allTickets.tickets.content);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const tickets =
+    useSelector((state) => state.allTickets.tickets?.content) || [];
   const login = useSelector((state) => state.login.userData);
   const posts = useSelector((state) => state.postXticket.ticket_posts);
   const loading = useSelector((state) => state.postXticket.loading);
   const allComments = useSelector((state) => state.commentXpost.post_comments);
-  const likes = useSelector((state) => state.likes.likes);
   const dispatch = useDispatch();
 
   const [selectedTicketId, setSelectedTicketId] = useState(null);
@@ -57,6 +60,9 @@ const Ticket = () => {
     text: "",
   });
   const [clickedPostId, setClickedPostId] = useState(null);
+  const [likedTickets, setLikedTickets] = useState([]);
+  const [likedPosts, setLikedPosts] = useState([]);
+  const [likedComments, setLikedComments] = useState([]);
 
   useEffect(() => {
     if (login && login.user) {
@@ -71,8 +77,20 @@ const Ticket = () => {
         ...prevState,
         [postId]: allComments,
       }));
+      if (login && login.authorization) {
+        allComments.forEach((comment) => {
+          dispatch(
+            fetchLikesForEntity(
+              login.authorization,
+              comment.id,
+              "comment",
+              login.user.user_id
+            )
+          );
+        });
+      }
     }
-  }, [allComments]);
+  }, [allComments, dispatch, login]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -94,6 +112,36 @@ const Ticket = () => {
     }
   }, [selectedTicketId, dispatch, login]);
 
+  useEffect(() => {
+    if (login && login.user && tickets.length > 0) {
+      tickets.forEach((ticket) => {
+        if (ticket.likes.some((like) => like.user.id === login.user.user_id)) {
+          setLikedTickets((prevState) => [...prevState, ticket.id]);
+        }
+      });
+    }
+  }, [tickets, login]);
+
+  useEffect(() => {
+    if (login && login.user && posts.length > 0) {
+      posts.forEach((post) => {
+        if (post.likes.some((like) => like.user.id === login.user.user_id)) {
+          setLikedPosts((prevState) => [...prevState, post.id]);
+        }
+      });
+    }
+  }, [posts, login]);
+
+  useEffect(() => {
+    if (login && login.user && allComments.length > 0) {
+      allComments.forEach((comment) => {
+        if (comment.likes.some((like) => like.user.id === login.user.user_id)) {
+          setLikedComments((prevState) => [...prevState, comment.id]);
+        }
+      });
+    }
+  }, [allComments, login]);
+
   const handleTicketClick = (ticket) => {
     setSelectedTicket(ticket);
     setSelectedTicketId(ticket.id);
@@ -101,13 +149,14 @@ const Ticket = () => {
   };
 
   const handleCommentClick = (postId) => {
+    dispatch(postCommentsAction(postId, login.authorization));
     setClickedPostId(clickedPostId === postId ? null : postId);
     setVisibleComments((prevState) => ({
       ...prevState,
       [postId]: !prevState[postId],
     }));
 
-    if (!visibleComments[postId] && !commentsData[postId]) {
+    if (!visibleComments[postId] || !commentsData[postId]) {
       dispatch(postCommentsAction(postId, login.authorization));
     }
   };
@@ -260,6 +309,53 @@ const Ticket = () => {
     setUploadFormData({ ...uploadFormData, [name]: value });
   };
 
+  const handleLikeToggle = (ticketId) => {
+    if (likedTickets.includes(ticketId)) {
+      dispatch(
+        removeLike(login.authorization, ticketId, "ticket", login.user.user_id)
+      );
+      setLikedTickets(likedTickets.filter((id) => id !== ticketId));
+    } else {
+      dispatch(
+        addLike(login.authorization, ticketId, "ticket", login.user.user_id)
+      );
+      setLikedTickets([...likedTickets, ticketId]);
+    }
+  };
+
+  const handlePostLikeToggle = (postId) => {
+    if (likedPosts.includes(postId)) {
+      dispatch(
+        removeLike(login.authorization, postId, "post", login.user.user_id)
+      );
+      setLikedPosts(likedPosts.filter((id) => id !== postId));
+    } else {
+      dispatch(
+        addLike(login.authorization, postId, "post", login.user.user_id)
+      );
+      setLikedPosts([...likedPosts, postId]);
+    }
+  };
+
+  const handleCommentLikeToggle = (commentId) => {
+    if (likedComments.includes(commentId)) {
+      dispatch(
+        removeLike(
+          login.authorization,
+          commentId,
+          "comment",
+          login.user.user_id
+        )
+      );
+      setLikedComments(likedComments.filter((id) => id !== commentId));
+    } else {
+      dispatch(
+        addLike(login.authorization, commentId, "comment", login.user.user_id)
+      );
+      setLikedComments([...likedComments, commentId]);
+    }
+  };
+
   if (!login) {
     return (
       <div className="bk vh-100 d-flex justify-content-center align-items-center flex-column">
@@ -286,13 +382,13 @@ const Ticket = () => {
           </Button>
         </Col>
       </Row>
-
+      <hr className="text-light" />
       <Row className="justify-content-between mt-3">
         <Col
           md={3}
           className="mb-5 pb-3 px-3 scrollable-col ticket-col bk-glass"
         >
-          <div className="d-flex justify-content-between align-items-center py-3">
+          <div className="d-flex justify-content-between align-items-center pt-3 pb-1">
             <h1 className="d-none d-md-block fw-bold ">TICKETS</h1>
             <Button
               className="d-flex flex-row d-md-none "
@@ -313,24 +409,33 @@ const Ticket = () => {
               <i className="bi bi-bookmark-plus-fill fs-4 text-success"></i>
             </Button>
           </div>
-          <hr className="m-0" />
+          <p className="fw-medium custom-fs-5">
+            Apri un ticket discussione descrivendo qualcosa
+          </p>
+
+          <hr className="mt-1" />
 
           {showTicketForm && (
             <Form className="mb-3">
               <Form.Group controlId="formTicketTitle">
-                <Form.Label>Title</Form.Label>
+                <Form.Label>Titolo</Form.Label>
                 <Form.Control
                   type="text"
-                  placeholder="Enter title"
+                  placeholder="Scrivi un titolo che descriva il tiket"
                   value={newTicket.title}
                   onChange={(e) =>
                     setNewTicket({ ...newTicket, title: e.target.value })
                   }
                 />
               </Form.Group>
-              <Button variant="primary" onClick={handleCreateTicket}>
+              <Button
+                variant="primary"
+                onClick={handleCreateTicket}
+                className="mt-2 custom-fs-5 fw-bold"
+              >
                 Create Ticket
               </Button>
+              <hr className="mb-0" />
             </Form>
           )}
 
@@ -364,8 +469,19 @@ const Ticket = () => {
                       <div className="p-ticket-date d-flex flex-row justify-content-between align-items-center m-0">
                         <p className="custom-fs-5">
                           Vota:
-                          <Button className="star bg-transparent rounded-cicle border-0 ms-2 bot position-relative">
-                            <i className="bi bi-star text-warning"></i>
+                          <Button
+                            className="star bg-transparent rounded-cicle border-0 ms-2 bot"
+                            onClick={(e) => {
+                              handleLikeToggle(ticket.id);
+                            }}
+                          >
+                            <i
+                              className={`bi ${
+                                likedTickets.includes(ticket.id)
+                                  ? "bi-star-fill text-warning"
+                                  : "bi-star text-warning"
+                              }`}
+                            ></i>
                           </Button>
                         </p>
 
@@ -380,7 +496,7 @@ const Ticket = () => {
         <Col lg={5} className="px-3 w-c bk-glass">
           <div className="d-flex justify-content-between align-items-center py-3">
             <h1 className="fw-bold">
-              POSTS {selectedTicket && `- ${selectedTicket.title}`}
+              {selectedTicket && ` ${selectedTicket.title}`}
             </h1>
             <Button
               className="b bg-transparent border-0 p-0"
@@ -391,7 +507,16 @@ const Ticket = () => {
             </Button>
           </div>
           <hr className="m-0" />
-
+          {posts.length === 0 && (
+            <>
+              <p className="text-center fw-medium custom-fs-5 mt-5">
+                - Nessun post trovato -
+              </p>
+              <p className="text-center fw-medium custom-fs-5 mb-5">
+                Prova a selezionare un ticket discussione per vedere i post
+              </p>
+            </>
+          )}
           {showPostForm && (
             <Form className="mb-3">
               <Form.Group controlId="formPostText">
@@ -422,7 +547,9 @@ const Ticket = () => {
           )}
 
           {loading ? (
-            <Spinner animation="border" variant="light" />
+            <>
+              <Spinner animation="border" variant="light" />
+            </>
           ) : (
             posts &&
             posts.map((post) => (
@@ -430,22 +557,34 @@ const Ticket = () => {
                 key={post.id}
                 className="d-flex justify-content-center rounded text-break my-3"
               >
-                <Card className="bk-glass w-50">
+                <Card className="bk-glass w-custom-card">
                   <Card.Img variant="top" src={post.urlContent} />
                   <Card.Body className="py-0 mt-2 px-3 pb-4">
                     <div>
-                      <div>
-                        <Button className="heart bg-transparent border-0 ms-2 bot ">
-                          <i className="bi bi-heart text-danger"></i>
+                      <div className="mb-2">
+                        <Button
+                          className="heart bg-transparent border-0 ms-2 bot"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handlePostLikeToggle(post.id);
+                          }}
+                        >
+                          <i
+                            className={`bi ${
+                              likedPosts.includes(post.id)
+                                ? "bi-heart-fill text-danger"
+                                : "bi-heart text-danger"
+                            }`}
+                          ></i>
                         </Button>
                         <Button
-                          className="bg-transparent border-0 rounded-5 bot mb-2 bot-chat ms-2"
+                          className="bg-transparent border-0 rounded-5 bot  bot-chat ms-2"
                           onClick={() => handleCommentClick(post.id)}
                         >
                           {clickedPostId === post.id ? (
                             <i className="bi bi-chat-fill text-info i-info"></i>
                           ) : (
-                            <i className="bi bi-chat i-info"></i>
+                            <i className="bi bi-chat text-info i-info"></i>
                           )}
                         </Button>
                       </div>
@@ -463,6 +602,7 @@ const Ticket = () => {
                           <p className="pe-3 fw-bold m-0 ms-2 custom-fs-5 p-custom">
                             {post.author.nickname}
                           </p>
+                          <p className="m-0 fw-medium">{post.text}</p>
                         </div>
 
                         <div>
@@ -485,12 +625,6 @@ const Ticket = () => {
                         </div>
                       </div>
                     </div>
-
-                    <Card.Title className="d-flex flex-row justify-content-between ">
-                      <div className="d-flex flex-row justify-content-between align-items-center">
-                        <p className="m-0">{post.text}</p>
-                      </div>
-                    </Card.Title>
 
                     {visibleComments[post.id] && (
                       <>
@@ -545,8 +679,20 @@ const Ticket = () => {
                                     </div>
                                   </div>
                                   <div className="d-flex flex-row align-items-center">
-                                    <Button className="heart bg-transparent border-0 ms-2 bot position-relative">
-                                      <i className="bi bi-heart text-danger"></i>
+                                    <Button
+                                      className="heart bg-transparent border-0 ms-2 bot"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleCommentLikeToggle(comment.id);
+                                      }}
+                                    >
+                                      <i
+                                        className={`bi ${
+                                          likedComments.includes(comment.id)
+                                            ? "bi-heart-fill text-danger"
+                                            : "bi-heart text-danger"
+                                        }`}
+                                      ></i>
                                     </Button>
 
                                     {comment.author.id ===

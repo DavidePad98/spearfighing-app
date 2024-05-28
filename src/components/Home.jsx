@@ -38,8 +38,8 @@ const Home = () => {
   return (
     <>
       <section className="home-section">
-        <div className="d-flex align-items-center bg image1">
-          <h1 className="text-white w-75 rounded-5 ms-5 p-3">
+        <div className="d-flex justify-content-center align-items-center bg image1">
+          <h1 className="text-white w-75 rounded-5  p-3">
             SaltwaterSpearos è un punto d'incontro per gli appassionati di pesca
             subacquea, un luogo dove poter condividere esperienze, storie
             avvincenti e conoscenze con altri pescatori
@@ -47,8 +47,8 @@ const Home = () => {
         </div>
       </section>
       <section className="home-section">
-        <div className="d-flex align-items-center bg image2">
-          <h1 className="text-white  w-75 rounded-5 ms-5  p-3">
+        <div className="d-flex justify-content-center align-items-center bg image2">
+          <h1 className="text-white  w-75 rounded-5   p-3">
             Sia che tu sia un neofita desideroso di apprendere, o un esperto
             desideroso di condividere le tue avventure, qui troverai
             un'atmosfera accogliente e stimolante
@@ -56,8 +56,8 @@ const Home = () => {
         </div>
       </section>
       <section className="home-section">
-        <div className="d-flex align-items-center bg image3">
-          <h1 className="text-white  w-75 rounded-5 ms-5  p-3">
+        <div className="d-flex flex-column justify-content-center align-items-center bg image3">
+          <h1 className="text-white  w-75 rounded-5   p-3">
             Scopri, interagisci e lasciati ispirare dalla comunità di amanti
             della pesca subacquea
           </h1>

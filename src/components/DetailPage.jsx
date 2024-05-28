@@ -13,6 +13,7 @@ import {
   Spinner,
 } from "react-bootstrap";
 import {
+  addLike,
   commentXUser,
   createCommentAction,
   deleteComment,
@@ -24,6 +25,7 @@ import {
   postCommentsAction,
   postXUser,
   postsByTicketAction,
+  removeLike,
   ticketXUser,
   uploadComment,
   uploadPost,
@@ -61,6 +63,87 @@ const DetailPage = () => {
   const [uploadFormData, setUploadFormData] = useState({
     text: "",
   });
+  const [likedTickets, setLikedTickets] = useState(false);
+  const [likedPosts, setLikedPosts] = useState(false);
+  const [likedComments, setLikedComments] = useState(false);
+  const [likedCommentsPost, setLikedCommentsPost] = useState(false);
+
+  useEffect(() => {
+    if (login && login.authorization) {
+      switch (type) {
+        case "user":
+          dispatch(getUserById(id, login.authorization));
+          dispatch(ticketXUser(id, login.authorization));
+          dispatch(postXUser(id, login.authorization));
+          dispatch(commentXUser(id, login.authorization));
+          break;
+        case "post":
+          dispatch(getPostById(id, login.authorization));
+          break;
+        case "ticket":
+          dispatch(getTicketById(id, login.authorization));
+          break;
+        case "comment":
+          dispatch(getCommentById(id, login.authorization));
+          break;
+        default:
+          break;
+      }
+    }
+  }, [type, id, login, dispatch]);
+
+  useEffect(() => {
+    if (allComments.length > 0) {
+      const postId = allComments[0].post.id;
+      setCommentsData((prevState) => ({
+        ...prevState,
+        [postId]: allComments,
+      }));
+    }
+  }, [allComments]);
+
+  useEffect(() => {
+    if (allComments.length > 0 && login && login.user) {
+      const initialLikedCommentsStatus = {};
+      allComments.forEach((comment) => {
+        initialLikedCommentsStatus[comment.id] =
+          handleCommentsPostLike(comment);
+      });
+      setLikedCommentsPost(initialLikedCommentsStatus);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allComments, login]);
+
+  const handleCommentsPostLike = (comment) => {
+    return comment.likes.some((like) => like.user.id === login.user.user_id);
+  };
+
+  useEffect(() => {
+    if (details.likes && login && login.user) {
+      const userLiked = details.likes.some(
+        (like) => like.user.id === login.user.user_id
+      );
+      setLikedPosts(userLiked);
+    }
+  }, [details.likes, login]);
+
+  useEffect(() => {
+    if (details.likes && login && login.user) {
+      const userLiked = details.likes.some(
+        (like) => like.user.id === login.user.user_id
+      );
+      setLikedTickets(userLiked);
+    }
+  }, [details.likes, login]);
+
+  useEffect(() => {
+    if (details.likes && login && login.user) {
+      const userLiked = details.likes.some(
+        (like) => like.user.id === login.user.user_id
+      );
+      setLikedComments(userLiked);
+    }
+  }, [details.likes, login]);
 
   const handleToggleTickets = () => {
     setShowTickets(!showTickets);
@@ -72,6 +155,9 @@ const DetailPage = () => {
 
   const handleToggleComments = () => {
     setShowComments(!showComments);
+    if (!showComments) {
+      dispatch(postCommentsAction(details.id, login.authorization));
+    }
   };
 
   const handleClosePostsTicket = () => {
@@ -87,6 +173,7 @@ const DetailPage = () => {
   //   case post
 
   const handleCommentClick = (postId) => {
+    dispatch(postCommentsAction(postId, login.authorization));
     setClickedPostId(clickedPostId === postId ? null : postId);
     setVisibleComments((prevState) => ({
       ...prevState,
@@ -203,6 +290,7 @@ const DetailPage = () => {
 
   const handlePostClick = (postId) => {
     navigate(`/details/post/${postId}`);
+    setShowPosts(false);
   };
 
   const handleTicketClick = (ticketId) => {
@@ -210,39 +298,77 @@ const DetailPage = () => {
     setShowTickets(false);
   };
 
-  useEffect(() => {
-    if (login && login.authorization) {
-      switch (type) {
-        case "user":
-          dispatch(getUserById(id, login.authorization));
-          dispatch(ticketXUser(id, login.authorization));
-          dispatch(postXUser(id, login.authorization));
-          dispatch(commentXUser(id, login.authorization));
-          break;
-        case "post":
-          dispatch(getPostById(id, login.authorization));
-          break;
-        case "ticket":
-          dispatch(getTicketById(id, login.authorization));
-          break;
-        case "comment":
-          dispatch(getCommentById(id, login.authorization));
-          break;
-        default:
-          break;
-      }
+  const handleLikeToggle = (ticketId) => {
+    if (likedTickets) {
+      dispatch(
+        removeLike(login.authorization, ticketId, "ticket", login.user.user_id)
+      );
+      setLikedTickets(false);
+    } else {
+      dispatch(
+        addLike(login.authorization, ticketId, "ticket", login.user.user_id)
+      );
+      setLikedTickets(true);
     }
-  }, [type, id, login, dispatch]);
+  };
 
-  useEffect(() => {
-    if (allComments.length > 0) {
-      const postId = allComments[0].post.id;
-      setCommentsData((prevState) => ({
+  const handlePostLikeToggle = (postId) => {
+    if (likedPosts) {
+      dispatch(
+        removeLike(login.authorization, postId, "post", login.user.user_id)
+      );
+      setLikedPosts(false);
+    } else {
+      dispatch(
+        addLike(login.authorization, postId, "post", login.user.user_id)
+      );
+      setLikedPosts(true);
+    }
+  };
+
+  const handleCommentLikeToggle = (commentId) => {
+    if (likedComments) {
+      dispatch(
+        removeLike(
+          login.authorization,
+          commentId,
+          "comment",
+          login.user.user_id
+        )
+      );
+      setLikedComments(false);
+    } else {
+      dispatch(
+        addLike(login.authorization, commentId, "comment", login.user.user_id)
+      );
+      setLikedComments(true);
+    }
+  };
+
+  const handleCommentsPostLikeToggle = (commentId) => {
+    if (likedCommentsPost[commentId]) {
+      dispatch(
+        removeLike(
+          login.authorization,
+          commentId,
+          "comment",
+          login.user.user_id
+        )
+      );
+      setLikedCommentsPost((prevState) => ({
         ...prevState,
-        [postId]: allComments,
+        [commentId]: false,
+      }));
+    } else {
+      dispatch(
+        addLike(login.authorization, commentId, "comment", login.user.user_id)
+      );
+      setLikedCommentsPost((prevState) => ({
+        ...prevState,
+        [commentId]: true,
       }));
     }
-  }, [allComments]);
+  };
 
   const renderDetails = () => {
     if (loading) {
@@ -262,7 +388,7 @@ const DetailPage = () => {
         return (
           <>
             <h1 className="text-white text-center mb-3 case">UTENTI</h1>
-            <Row className="w-100 justify-content-center align-items-center flex-column ">
+            <Row className="w-100 justify-content-center align-items-center flex-column m-custom">
               <Col
                 xs={12}
                 md={6}
@@ -341,7 +467,7 @@ const DetailPage = () => {
                   </Card.Body>
                 </Card>
               </Col>
-            </Row>{" "}
+            </Row>
           </>
         );
       case "post":
@@ -356,21 +482,39 @@ const DetailPage = () => {
         return (
           <>
             <h1 className="text-white text-center mb-3 case">POSTS</h1>
-            <Row className="justify-content-center align-items-center flex-column ">
+            <Row className="justify-content-center align-items-center flex-column m-custom">
               <Col sm={4} className="pb-5">
                 <Card className="bk-glass pb-3">
                   <Card.Img variant="top" src={details.urlContent} />
                   <Card.Body className="py-0 mt-2 px-3">
-                    <Button
-                      className="bg-transparent border-0 rounded-5 bot mb-2 bot-chat"
-                      onClick={() => handleCommentClick(details.id)}
-                    >
-                      {clickedPostId === details.id ? (
-                        <i className="bi bi-chat-fill text-info i-info"></i>
-                      ) : (
-                        <i className="bi bi-chat i-info"></i>
-                      )}
-                    </Button>
+                    <div className="my-2">
+                      <Button
+                        className="heart bg-transparent border-0 ms-2 bot"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePostLikeToggle(details.id);
+                        }}
+                      >
+                        <i
+                          className={`bi ${
+                            likedPosts
+                              ? "bi-heart-fill text-danger"
+                              : "bi-heart text-danger"
+                          }`}
+                        ></i>
+                      </Button>
+                      <Button
+                        className="bg-transparent border-0 rounded-5 bot ms-2 bot-chat"
+                        onClick={() => handleCommentClick(details.id)}
+                      >
+                        {clickedPostId === details.id ? (
+                          <i className="bi bi-chat-fill text-info i-info"></i>
+                        ) : (
+                          <i className="bi bi-chat text-info i-info"></i>
+                        )}
+                      </Button>
+                    </div>
+
                     <Card.Title className="d-flex flex-row justify-content-between ">
                       <div className="d-flex flex-row justify-content-between align-items-center">
                         <img
@@ -461,11 +605,25 @@ const DetailPage = () => {
                                       </p>
                                     </div>
                                   </div>
-
+                                  <Button
+                                    className="heart bg-transparent border-0 ms-2 bot"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleCommentsPostLikeToggle(comment.id);
+                                    }}
+                                  >
+                                    <i
+                                      className={`bi ${
+                                        likedCommentsPost[comment.id]
+                                          ? "bi-heart-fill text-danger"
+                                          : "bi-heart"
+                                      }`}
+                                    ></i>
+                                  </Button>
                                   {comment.author.id === login.user.user_id && (
-                                    <div className="me-3">
+                                    <div className=" d-flex flex-row">
                                       <Button
-                                        className="border-0 rounded-5 trash me-2 bot"
+                                        className="border-0 rounded-5 trash  bot"
                                         onClick={() =>
                                           handleDeleteComment(
                                             comment.id,
@@ -504,11 +662,28 @@ const DetailPage = () => {
         return (
           <>
             <h1 className="text-white text-center mb-3 case">TICKETS</h1>
-            <Row className="mx-3 pb-5 align-items-center justify-content-center">
-              <Card>
+            <Row className="mx-3 pb-5 align-items-center justify-content-center m-custom">
+              <Card className="bk-glass">
                 <Card.Body>
                   <Card.Title className="d-flex justify-content-between align-items-center px-3">
-                    <div>{details.title}</div>
+                    <div className="d-flex flex-row">
+                      <h1 className="fs-4">{details.title}</h1>
+                      <Button
+                        className="heart bg-transparent border-0 ms-2 bot"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleLikeToggle(details.id);
+                        }}
+                      >
+                        <i
+                          className={`bi ${
+                            likedTickets
+                              ? "bi-heart-fill text-danger"
+                              : "bi-heart"
+                          }`}
+                        ></i>
+                      </Button>
+                    </div>
                     <div className="d-flex flex-row align-items-center">
                       <img
                         src={
@@ -535,6 +710,21 @@ const DetailPage = () => {
                     <Card className="mt-3">
                       <Card.Img variant="top" src={post.urlContent} />
                       <Card.Body>
+                        <Button
+                          className="heart bg-transparent border-0 ms-2 bot"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handlePostLikeToggle(post.id);
+                          }}
+                        >
+                          <i
+                            className={`bi ${
+                              likedPosts
+                                ? "bi-heart-fill text-danger"
+                                : "bi-heart"
+                            }`}
+                          ></i>
+                        </Button>
                         <Button
                           className="bg-transparent border-0 rounded-5 bot mb-2 bot-chat"
                           onClick={() => handleCommentClick(post.id)}
@@ -690,12 +880,12 @@ const DetailPage = () => {
         return (
           <>
             <h1 className="text-white text-center mb-3 case">COMMENTO</h1>
-            <Row className=" justify-content-center align-items-center">
+            <Row className=" justify-content-center align-items-center m-custom">
               <Col md={4}>
                 <Card>
                   <Card.Body>
                     <Card.Title></Card.Title>
-                    <Card.Text className="d-flex flex-row align-items-center ">
+                    <Card.Text className="d-flex flex-row align-items-center justify-content-between">
                       <div className="d-flex flex-row align-items-center">
                         <img
                           src={
@@ -709,12 +899,29 @@ const DetailPage = () => {
                         <p className="pe-3 fw-bold m-0 ms-2">
                           {details.author.nickname}:
                         </p>
+                        <div>{details.text}</div>
                       </div>
-                      <div>{details.text}</div>
+                      <div>
+                        <Button
+                          className="heart bg-transparent border-0 ms-2 bot"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleCommentLikeToggle(details.id);
+                          }}
+                        >
+                          <i
+                            className={`bi ${
+                              likedComments
+                                ? "bi-heart-fill text-danger"
+                                : "bi-heart"
+                            }`}
+                          ></i>
+                        </Button>
+                      </div>
                     </Card.Text>
                     <Card.Text className="text-end  d-flex justify-content-between ">
                       <span className="custom-fs-6 mt-2">
-                        Post:{" "}
+                        Post:
                         {details.post
                           ? details.post.text
                           : "No post text available"}

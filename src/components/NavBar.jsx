@@ -22,11 +22,7 @@ import { useCallback, useEffect, useState } from "react";
 import { debounce } from "lodash";
 
 const NavBar = () => {
-  // const user = useSelector(
-  //   (state) => state.login.userData && state.login.userData.user
-  // );
   const login = useSelector((state) => state.login.userData);
-  // const details = useSelector((state) => state.details.data);
   const users = useSelector((state) => state.search.users);
   const posts = useSelector((state) => state.search.posts);
   const tickets = useSelector((state) => state.search.tickets);
@@ -51,6 +47,7 @@ const NavBar = () => {
   const handleLogout = () => {
     dispatch(logoutUser());
     navigate("/");
+    setIsMenuOpen(false);
   };
 
   const handleToggle = () => {
@@ -115,23 +112,32 @@ const NavBar = () => {
             <Nav className="text-center">
               {login && login !== null ? (
                 <>
-                  <Nav.Link
-                    as={Link}
-                    to={"/profile"}
-                    className="white-nav_links d-md-none fs-5"
-                    onClick={handleLinkClick}
-                  >
-                    <img
-                      src={
-                        login.user.profileImage == null
-                          ? "https://picsum.photos/id/912/200"
-                          : login.user.profileImage
-                      }
-                      alt="profile_img"
-                      className="profile_img rounded-circle "
-                    />
-                    {login.user.nickname}
-                  </Nav.Link>
+                  <div className="d-flex felx-row justify-content-center align-items-center">
+                    <Nav.Link
+                      as={Link}
+                      to={"/profile"}
+                      className="white-nav_links d-md-none fs-5"
+                      onClick={handleLinkClick}
+                    >
+                      <img
+                        src={
+                          login.user.profileImage == null
+                            ? "https://picsum.photos/id/912/200"
+                            : login.user.profileImage
+                        }
+                        alt="profile_img"
+                        className="profile_img rounded-circle "
+                      />
+                      {login.user.nickname}
+                    </Nav.Link>
+                    <Nav.Link
+                      onClick={handleLogout}
+                      className="text-danger fw-bold fs-5 ms-2 invisibile"
+                    >
+                      <i class="bi bi-box-arrow-right ms-2 fs-5"></i>
+                    </Nav.Link>
+                  </div>
+
                   <Nav.Link
                     as={Link}
                     to={"/"}
@@ -149,7 +155,8 @@ const NavBar = () => {
                     Discussioni
                   </Nav.Link>
                   <Nav.Link
-                    href="#pricing"
+                    as={Link}
+                    to={"scopri"}
                     className="white-nav_links"
                     onClick={handleLinkClick}
                   >
@@ -297,7 +304,8 @@ const NavBar = () => {
                     Discussioni
                   </Nav.Link>
                   <Nav.Link
-                    href="#pricing"
+                    as={Link}
+                    to={"scopri"}
                     className="white-nav_links"
                     onClick={handleLinkClick}
                   >
@@ -334,7 +342,7 @@ const NavBar = () => {
                     <Dropdown.Item as={Link} to={"/profile"}>
                       Profile
                     </Dropdown.Item>
-                    <Dropdown.Item href="#">Menu Item</Dropdown.Item>
+                    <hr className="my-1" />
                     <Dropdown.Item
                       onClick={handleLogout}
                       className="text-danger fw-bold fs-5"

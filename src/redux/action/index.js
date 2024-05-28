@@ -1216,12 +1216,12 @@ export const fetchLikesFailure = (error) => ({
   payload: error || "Unknown error",
 });
 
-export const fetchLikesForPost = (token, postId) => {
-  return async (dispatch) => {
+export const fetchLikesForEntity =
+  (token, entityId, entityType, userId) => async (dispatch) => {
     dispatch(fetchLikesRequest());
     try {
       const response = await fetch(
-        `http://localhost:3001/likes/post/${postId}`,
+        `http://localhost:3001/likes/${entityType}/${entityId}?userId=${userId}`,
         {
           method: "GET",
           headers: {
@@ -1233,70 +1233,19 @@ export const fetchLikesForPost = (token, postId) => {
       if (!response.ok) {
         throw new Error("Invalid credentials");
       }
-      const likeData = await response.json();
-      dispatch(fetchLikesSuccess(likeData));
+      const data = await response.json();
+      dispatch(fetchLikesSuccess(data));
     } catch (error) {
       dispatch(fetchLikesFailure(error.message));
     }
   };
-};
-
-export const fetchLikesForTicket = (token, ticketId) => {
-  return async (dispatch) => {
-    dispatch(fetchLikesRequest());
-    try {
-      const response = await fetch(
-        `http://localhost:3001/likes/ticket/${ticketId}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Invalid credentials");
-      }
-      const likeData = await response.json();
-      dispatch(fetchLikesSuccess(likeData));
-    } catch (error) {
-      dispatch(fetchLikesFailure(error.message));
-    }
-  };
-};
-
-export const fetchLikesForComment = (token, commentId) => {
-  return async (dispatch) => {
-    dispatch(fetchLikesRequest());
-    try {
-      const response = await fetch(
-        `http://localhost:3001/likes/comment/${commentId}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Invalid credentials");
-      }
-      const likeData = await response.json();
-      dispatch(fetchLikesSuccess(likeData));
-    } catch (error) {
-      dispatch(fetchLikesFailure(error.message));
-    }
-  };
-};
 
 export const fetchLikesForUser = (token, userId) => {
   return async (dispatch) => {
     dispatch(fetchLikesRequest());
     try {
       const response = await fetch(
-        `http://localhost:3001/likes/user/${userId}`,
+        `http://localhost:3001/likes/user?userId=${userId}`,
         {
           method: "GET",
           headers: {

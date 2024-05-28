@@ -8,6 +8,7 @@ import "../assets/sass/Login.scss";
 const LoginPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [loginError, setLoginError] = useState(false);
 
   const [formData, setFormData] = useState({
     nicknameOrEmail: "",
@@ -49,6 +50,7 @@ const LoginPage = () => {
       navigate("/");
     } else {
       console.error("Login fallito");
+      setLoginError(true);
     }
   };
 
@@ -91,6 +93,7 @@ const LoginPage = () => {
       password: "",
       city: "",
     });
+    setLoginError(false);
   };
 
   return (
@@ -184,6 +187,11 @@ const LoginPage = () => {
                 className="mb-3"
                 controlId="exampleForm.ControlInput1"
               >
+                {loginError && (
+                  <h1 className="text-danger text-center mb-3 fs-4">
+                    Login fallito, riprova...
+                  </h1>
+                )}
                 <Form.Label className="fw-bold">Nickname or Email</Form.Label>
                 <Form.Control
                   required

@@ -107,33 +107,26 @@ const Footer = () => {
 
         <div className="footer-links text-secondary fs-5 position-absolute bottom-0 flex-column d-flex jutify-content-center align-items-center w-100">
           <ul className="socials">
-            <li className="white-nav_links">
-              <i className="bi bi-twitter-x "></i>
+            <li>
+              <a
+                href="https://github.com/DavidePad98"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <i className="bi bi-github text-secondary white-nav_links fs-2"></i>
+              </a>
             </li>
-            <li className="white-nav_links">
-              <i className="bi bi-facebook "></i>
-            </li>
-            <li className="white-nav_links">
-              <i className="bi bi-linkedin "></i>
-            </li>
-          </ul>
-          <ul className="links">
-            <li className="white-nav_links">
-              <a>Home</a>
-            </li>
-            <li className="white-nav_links">
-              <a>About</a>
-            </li>
-            <li className="white-nav_links">
-              <a>Portfolio</a>
-            </li>
-            <li className="white-nav_links">
-              <a>Skillset</a>
-            </li>
-            <li className="white-nav_links">
-              <a>Hire</a>
+            <li className="white-nav_links fs-2">
+              <a
+                href="https://linkedin.com/in/davide-paderi-5156622b5"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <i className="bi bi-linkedin text-secondary white-nav_links fs-2"></i>
+              </a>
             </li>
           </ul>
+
           <p className="legal">© 2024 Davide Paderi</p>
         </div>
       </section>

@@ -13,6 +13,7 @@ import {
   deleteComment,
   deletePost,
   deleteTicket,
+  fetchLikesForUser,
   getUserById,
   postXUser,
   postsByTicketAction,
@@ -63,6 +64,7 @@ const Profile = () => {
   const [ticketFormData, setTicketFormData] = useState({
     title: "",
   });
+
   const [showPostModal, setShowPostModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState(false);
   const [currentPost, setCurrentPost] = useState(null);
@@ -78,6 +80,7 @@ const Profile = () => {
       dispatch(ticketXUser(login.user.user_id, login.authorization));
       dispatch(postXUser(login.user.user_id, login.authorization));
       dispatch(commentXUser(login.user.user_id, login.authorization));
+      dispatch(fetchLikesForUser(login.authorization, login.user.user_id));
     }
   }, [dispatch, login]);
 
@@ -306,7 +309,7 @@ const Profile = () => {
   return (
     <>
       <Container fluid className="container-profile pb-5">
-        <Row className="w-100 justify-content-center align-items-center flex-column ">
+        <Row className="w-100 justify-content-center align-items-center flex-column m-custom">
           <Col xs={12} md={6} lg={6} className="d-flex justify-content-center ">
             <Card className="profile-card">
               <Card.Img
@@ -341,11 +344,11 @@ const Profile = () => {
                         le mie pubblicazioni:
                       </h1>
                     </div>
-                    <div className="d-flex flex-column flex-sm-row ">
+                    <div className="d-flex flex-column flex-lg-row justify-content-center align-items-center">
                       <p className="m-3">
                         <Button
                           onClick={handleToggleTickets}
-                          className="text-uppercase text-black fw-bold border-0 bot"
+                          className="text-uppercase text-black fw-bold border-0 bot d-flex flex-row"
                         >
                           Tickets
                           {showTickets ? (
@@ -358,7 +361,7 @@ const Profile = () => {
                       <p className="m-3 ">
                         <Button
                           onClick={handleTogglePosts}
-                          className="text-uppercase text-black fw-bold border-0 bot"
+                          className="text-uppercase text-black fw-bold border-0 bot d-flex flex-row"
                         >
                           Posts
                           {showPosts ? (
@@ -371,7 +374,7 @@ const Profile = () => {
                       <p className="m-3 ">
                         <Button
                           onClick={handleToggleComments}
-                          className="text-uppercase text-black fw-bold border-0 bot"
+                          className="text-uppercase text-black fw-bold border-0 bot d-flex flex-row"
                         >
                           Commenti
                           {showComments ? (
@@ -850,7 +853,7 @@ const Profile = () => {
                           </div>
                         </Card.Text>
                         <Card.Title className="d-flex justify-content-between">
-                          <h5>{comment.text}</h5>
+                          <p>{comment.text}</p>
                           <div className="custom-fs-5 d-flex flex-row align-items-center ">
                             <img
                               src={

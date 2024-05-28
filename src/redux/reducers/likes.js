@@ -43,7 +43,11 @@ const likeReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        likes: state.likes.filter((like) => like.userId !== action.payload),
+        likes: state.likes.filter(
+          (like) =>
+            like[`${action.payload.entityType}Id`] !==
+              action.payload.entityId || like.userId !== action.payload.userId
+        ),
         error: null,
       };
     case FETCH_LIKES_FAILURE:

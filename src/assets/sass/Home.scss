@@ -32,60 +32,61 @@ section h1 {
   text-transform: uppercase;
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
-  background-color: rgba(255, 255, 255, 0.25);
+  background-color: rgba(0, 0, 0, 0.485);
+
   border-radius: 12px;
   border: 1px solid rgba(209, 213, 219, 0.3);
 }
 
-@media (width < 1520px) {
+@media (min-width: 1520px) {
   section h1 {
     font-size: 3em;
   }
 }
-@media (width < 1057px) {
+@media (min-width: 1057px) {
   section h1 {
     font-size: 2.5em;
   }
 }
 
-@media (width < 865px) {
+@media (min-width: 865px) {
   section h1 {
     font-size: 2.25em;
   }
 }
 
-@media (width < 770px) {
+@media (min-width: 770px) {
   section h1 {
     font-size: 2em;
   }
 }
 
-@media (width < 490px) {
+@media (min-width: 490px) {
   section h1 {
     font-size: 1.9em;
   }
 }
 
-@media (width < 455px) {
+@media (min-width: 455px) {
   section h1 {
     font-size: 1.7em;
   }
 }
 
-@media (width < 400px) {
+@media (min-width: 400px) {
   section h1 {
     font-size: 1.6em;
   }
 }
 
 .image1 {
-  background-image: url(../img/spearfishing-life-slide4.jpg);
+  background-image: url(../img/foto-6.jpg);
 }
 .image2 {
-  background-image: url(../img/Spearfishing-open-water.jpg);
+  background-image: url(../img/foto-10.jpg);
 }
 .image3 {
-  background-image: url(../img/Spearfishing-with-Fish.jpg);
+  background-image: url(../img/foto-9.jpg);
   -webkit-box-shadow: 0px 15px 24px 12px rgba(0, 0, 0, 0.72);
   box-shadow: 0px 15px 24px 12px rgba(0, 0, 0, 0.72);
 }

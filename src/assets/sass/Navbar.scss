@@ -48,15 +48,21 @@
   cursor: pointer;
 }
 
-@media (width > 990px) {
+@media (min-width: 990px) {
   .search-results {
     width: 15em;
   }
 }
 
 .custom-fs-6 {
-  font-size: 0.75rem;
+  font-size: 0.75rem !important;
 }
 .custom-fs-5 {
-  font-size: 0.85rem;
+  font-size: 0.85rem !important;
+}
+
+@media (min-width: 992px) {
+  .invisibile {
+    display: none;
+  }
 }

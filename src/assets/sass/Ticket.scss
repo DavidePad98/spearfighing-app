@@ -72,8 +72,9 @@ p {
   min-width: 80px;
 }
 
-.star {
-  border-radius: 50%;
+.star,
+.heart {
+  border-radius: 50% !important;
 }
 
 .badge-custom {
@@ -82,5 +83,70 @@ p {
 }
 
 .custom-fs-7 {
-  font-size: 0.7em;
+  font-size: 0.7em !important;
+}
+
+.custom-fs-6 {
+  font-size: 0.75rem !important;
+}
+.custom-fs-5 {
+  font-size: 0.85rem !important;
+}
+
+.w-custom-card {
+  width: 100%;
+}
+
+@media (width > 500px) {
+  .w-custom-card {
+    width: 90%;
+  }
+}
+@media (width > 650px) {
+  .w-custom-card {
+    width: 80%;
+  }
+}
+@media (width > 768px) {
+  .w-custom-card {
+    width: 100%;
+  }
+}
+@media (width > 1000px) {
+  .w-custom-card {
+    width: 90%;
+  }
+}
+@media (width > 1200px) {
+  .w-custom-card {
+    width: 80%;
+  }
+}
+@media (width > 1350px) {
+  .w-custom-card {
+    width: 70%;
+  }
+}
+@media (width > 1650px) {
+  .w-custom-card {
+    width: 60%;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #adadad;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #5d321650;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ff6600;
 }
