@@ -19,7 +19,7 @@ const Footer = () => {
   return (
     <footer>
       <section className="d-flex justify-content-between">
-        <h1 className="mt-h1-footer text-white rounded-5 w-50 ms-5 p-3">
+        <h1 className="mt-h1-footer text-white h1-home rounded-5 w-50 ms-5 p-3">
           Iscriviti per far parte della nostra community di pescatori!
         </h1>
         {login ? (
